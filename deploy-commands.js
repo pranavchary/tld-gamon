@@ -22,10 +22,6 @@ for (const file of commandFiles) {
 
 // Construct and prepare an instance of the REST module and deploy your commands
 const rest = new REST().setToken(BOT_TOKEN);
-// for global commands
-// rest.put(Routes.applicationCommands(BOT_CLIENT_ID), { body: [] })
-// 	.then(() => console.info('Successfully deleted all application commands.'))
-// 	.catch(console.error);
 
 (async () => {
 	try {
