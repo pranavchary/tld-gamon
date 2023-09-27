@@ -82,7 +82,7 @@ const getTargetKeystoneLevel = (highestRunDungeon, currentDungeon) => {
 
 const capitalizeWord = (word) => {
     if (!word) return '';
-    return word.charAt(0).toUpperCase() + word.substring(1)
+    return word.charAt(0).toUpperCase() + word.substring(1);
 }
 
 module.exports = {
