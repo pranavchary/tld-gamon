@@ -1,1 +1,1 @@
-worker: node deploy-commands.js && node bot.js
+worker: npm start
