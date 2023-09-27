@@ -1,5 +1,5 @@
 # TLD Mythic Rating Helper
-Mythic Rating Helper is a Discord bot which can provide information about completing Mythic+ dungeons at certain keystone levels and how that might impact a character's Mythic+ rating. This version of Mythic Rating Helper has been modified and is currently meant to work within the Discord server for the World of Warcraft guild The Last Dynasty (US - Thrall).
+Mythic Rating Helper is a Discord bot which can provide information about completing Mythic+ dungeons at certain keystone levels and how that might impact a character's Mythic+ rating. This version of Mythic Rating Helper has been modified and is currently meant to work within the Discord server for the World of Warcraft guild The Last Dynasty (US - Thrall), **TLD Reforged**.
 
 Some operations this bot can perform:
 - Simulate a character running all Mythic+ dungeons at a single keystone level
