@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "cmds": "node deploy-commands.js",
-    "dev": "nodemon bot.js"
+    "dev": "nodemon bot.js",
+    "start": "node bot.js"
   },
   "keywords": [],
   "author": "Pranavius & Tuskyouup",
