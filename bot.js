@@ -26,11 +26,13 @@ bot.on('ready', () => {
 	console.info('TLD M+ Helper is up and running');
 });
 
+// Execute when bot encounters an error
 bot.on('error', (error) => {
 	console.info('TLD M+ Helper encountered an error:', error.name, error.message);
 	console.error(error.stack);
 });
 
+// Execute when bot disconnects for any reason once live
 bot.on('disconnect', (...params) => {
 	console.warn('TLD M+ Helper disconnected. See log below:');
 	console.warn(params);

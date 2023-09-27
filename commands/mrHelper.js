@@ -1,11 +1,13 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('@discordjs/builders');
 const { default: axios } = require('axios');
-const {
-    getAffixCountByKeyLevel,
-    getDungeonScore,
-    dungeonShortnameMap
-} = require('../helpers');
+const { getDungeonScore, capitalizeWord, dungeonShortnameMap } = require('../helpers');
 
+/**
+ * Checks Raider.io Mythic+ data for any missing dungeon/affix combinations and populates the appropriate arrays with enough data to continue simulation
+ * @param {*} rioData Data retrieved from Raider.io
+ * @param {number} keyLevel Mythic+ keystone level
+ * @returns Fully populated Raider.io data object without missing dungeon/affix combinations in the event that none have been completed for a character
+ */
 const cleanMythicPlusData = (rioData, keyLevel) => {
     const { mythic_plus_best_runs: bestRuns, mythic_plus_alternate_runs: altRuns, ...cleanData } = rioData;
     const dungeonShortNames = Object.keys(dungeonShortnameMap);
@@ -48,13 +50,18 @@ const cleanMythicPlusData = (rioData, keyLevel) => {
     return cleanData;
 }
 
+/**
+ * @param {*} rioData Data retrieved from Raider.io
+ * @param {number} keyLevel Mythic+ keystone level
+ * @returns Simulation output for completing each Mythic+ dungeon on both Tyrannical and Fortified at the given keystone level within the time limit
+ */
 const simulateLevel = (rioData, keyLevel) => {
-    const data = cleanMythicPlusData(rioData);
+    const data = cleanMythicPlusData(rioData, keyLevel);
+    const { mythic_plus_best_runs, mythic_plus_alternate_runs } = data;
 
     let totalScore = 0;
-    const { mythic_plus_best_runs, mythic_plus_alternate_runs } = data;
-    const fortified = [];
-    const tyrannical = [];
+    let totalPotentialIncrease = 0;
+    const dungeons = [];
 
     for (let bestRun of mythic_plus_best_runs) {
         const dungeon = {
@@ -63,8 +70,7 @@ const simulateLevel = (rioData, keyLevel) => {
             primaryAffix: bestRun.affixes[0].name,
         };
 
-        const affixCount = getAffixCountByKeyLevel(keyLevel);
-        const simmedScore = getDungeonScore(keyLevel, affixCount, keyLevel > 10);
+        const simmedScore = getDungeonScore(keyLevel);
         const score = +(bestRun.score * 1.5).toFixed(1);
 
         if (score > simmedScore) {
@@ -77,13 +83,10 @@ const simulateLevel = (rioData, keyLevel) => {
             dungeon.level = keyLevel;
         }
 
-        if (dungeon.primaryAffix.toLowerCase() === 'fortified') {
-            fortified.push(dungeon);
-        } else {
-            tyrannical.push(dungeon);
-        }
-
         totalScore += dungeon.score;
+        totalPotentialIncrease += Math.ceil(dungeon.potentialIncrease);
+
+        dungeons.push(dungeon);
     }
 
     for (let altRun of mythic_plus_alternate_runs) {
@@ -93,8 +96,7 @@ const simulateLevel = (rioData, keyLevel) => {
             primaryAffix: altRun.affixes[0].name,
         };
 
-        const affixCount = getAffixCountByKeyLevel(keyLevel);
-        const simmedScore = +(getDungeonScore(keyLevel, affixCount, keyLevel > 10) / 3).toFixed(1);
+        const simmedScore = +(getDungeonScore(keyLevel) / 3).toFixed(1);
         const score = +(altRun.score * 0.5).toFixed(1);
 
         if (score > simmedScore) {
@@ -107,19 +109,22 @@ const simulateLevel = (rioData, keyLevel) => {
             dungeon.level = keyLevel;
         }
 
-        if (dungeon.primaryAffix.toLowerCase() === 'fortified') {
-            fortified.push(dungeon);
-        } else {
-            tyrannical.push(dungeon);
-        }
-
         totalScore += dungeon.score;
+        totalPotentialIncrease += Math.ceil(dungeon.potentialIncrease);
+        
+        dungeons.push(dungeon);
     }
     
     totalScore = Math.ceil(totalScore);
-    return { tyrannical, fortified, totalScore }
+    dungeons.forEach((d) => d.potentialIncrease = Math.ceil(d.potentialIncrease));
+
+    return { dungeons, totalScore, totalPotentialIncrease }
 }
 
+/**
+ * @param {*} rioData Data retrieved from Raider.io
+ * @returns Calculated output for which Mythic+ dungeons a character can reasonably complete to increase their rating
+ */
 const getPushData = (rioData) => {
     const { mythic_plus_best_runs, mythic_plus_alternate_runs } = rioData;
     const push = getBlankPushObject();
@@ -147,7 +152,7 @@ const getPushData = (rioData) => {
             // Use a base score calc for a +2 Fortified dungeon
 
             dungeon.primaryAffix = 'Fortified';
-            dungeon.potentialIncrease = getDungeonScore(2, 1);
+            dungeon.potentialIncrease = getDungeonScore(2);
             dungeon.score = 0;
             dungeon.level = 2
 
@@ -164,14 +169,14 @@ const getPushData = (rioData) => {
             targetAffix = bestAffix;
             bestAffix = 'fortified';
         }
-        dungeon.primaryAffix = targetAffix.charAt(0).toUpperCase() + targetAffix.substring(1);
+        dungeon.primaryAffix = capitalizeWord(targetAffix);
         let altScore = 0;
         const bestScore = +(pushDungeon[bestAffix].score * 1.5).toFixed(1);
         if (pushDungeon[targetAffix].score) altScore = +(pushDungeon[targetAffix].score / 2).toFixed(1);
 
         dungeon.potentialIncrease = +((bestScore / 3) - altScore).toFixed(1);
         dungeon.score = +(bestScore + altScore).toFixed(1);
-        dungeon.level = pushDungeon[bestAffix].mythic_level - (pushDungeon[bestAffix].num_keystone_upgrades > 0 ? 0 : 1);;
+        dungeon.level = pushDungeon[bestAffix].mythic_level - (pushDungeon[bestAffix].num_keystone_upgrades > 0 ? 0 : 1);
 
         totalScore += dungeon.score
         totalPotentialIncrease += Math.ceil(dungeon.potentialIncrease);
@@ -185,12 +190,24 @@ const getPushData = (rioData) => {
     return { dungeons, totalScore, totalPotentialIncrease };
 }
 
+/**
+ * Determines details such as Mythic+ keystone level and potential Mythic+ rating increase from a dungeon for characters working towards a rating goal.
+ * @param {*} dungeon Dungeon to calculate new information for
+ * @param {*} rioData Data retrieved from Raider.io
+ * @param {boolean} useRioUpgrades Whether or not to use the Raider.io data provided to increase the Mythic+ keystone level (defaults to *false*).
+ * @returns An object containing information on which dungeon to run that will help a character reach their goal Mythic+ rating
+ */
 const getGoalDungeonToRun = (dungeon, rioData, useRioUpgrades = false) => {
     const result = { ...dungeon };
-    // Check how many key level upgrades a character got for their best run for the dungeon on this affix and increase the recommended key level by that much
-    let bestRioDungeon = rioData.mythic_plus_best_runs.find((run) => run.short_name === dungeon.shortName && run.affixes[0].name === dungeon.primaryAffix)
-        || rioData.mythic_plus_alternate_runs.find((run) => run.short_name === dungeon.shortName && run.affixes[0].name === dungeon.primaryAffix);
-    result.level += useRioUpgrades ? (bestRioDungeon?.num_keystone_upgrades || 1) : 1;
+    
+    let upgrade = 1;
+    if (useRioUpgrades === true) {
+        // Check how many key level upgrades a character got for their best run for the dungeon on this affix and increase the recommended key level by that much
+        let bestRioDungeon = rioData.mythic_plus_best_runs.find((run) => run.short_name === dungeon.shortName && run.affixes[0].name === dungeon.primaryAffix)
+            || rioData.mythic_plus_alternate_runs.find((run) => run.short_name === dungeon.shortName && run.affixes[0].name === dungeon.primaryAffix);
+        upgrade = bestRioDungeon?.num_keystone_upgrades || 1;
+    }
+    result.level += upgrade;
 
     // We want to find the same dungeon's run information for the opposite affix. If it's not found, create an object for a brand new run
     let alt = rioData.mythic_plus_best_runs.find((run) => run.short_name === dungeon.shortName && run.affixes[0].name !== dungeon.primaryAffix)
@@ -202,13 +219,13 @@ const getGoalDungeonToRun = (dungeon, rioData, useRioUpgrades = false) => {
             name: dungeonShortnameMap[dungeon.shortName],
             shortName: dungeon.shortName,
             primaryAffix: dungeon.primaryAffix === 'Fortified' ? 'Tyrannical' : 'Fortified',
-            potentialIncrease: getDungeonScore(2, 1),
+            potentialIncrease: getDungeonScore(2),
             score: 0,
             level: 2,
         }
     }
 
-    const newBestScore = +(getDungeonScore(result.level, getAffixCountByKeyLevel(result.level)) * 1.5).toFixed(1);
+    const newBestScore = +(getDungeonScore(result.level) * 1.5).toFixed(1);
     const newAltScore = +(alt.score / 2).toFixed(1);
 
     result.potentialIncrease = Math.ceil((newBestScore / 3) - newAltScore);
@@ -217,14 +234,19 @@ const getGoalDungeonToRun = (dungeon, rioData, useRioUpgrades = false) => {
     return result;
 }
 
+/**
+ * @param {*} pushData Calculated output for which Mythic+ dungeons a character can reasonably complete to increase their rating (output of {@link getPushData})
+ * @param {*} rioData Data retrieved from Raider.io
+ * @param {number} goal The Mythic+ rating a character wants to achieve
+ * @returns Calculated output for which Mythic+ dungeons a character can reasonably complete to reach their goal Mythic+ rating
+ */
 const getGoalData = (pushData, rioData, goal) => {
-    let { dungeons: dungeonsToRun } = pushData;
+    const { dungeons: pushDungeons } = pushData;
+    let dungeonsToRun = [...pushDungeons];
     let runningTotal = pushData.totalScore + pushData.totalPotentialIncrease;
-    // Sort current list of push dungeons by lowest key level to highest
-    dungeonsToRun = dungeonsToRun.sort((a, b) => a.level - b.level);
     // Iterate over each dungeon, calculate what the score and new score weights would be for timing the same dungeon on a higher key level,
     // add then add it to the list of recommended dungeons
-    for (let d of dungeonsToRun) {
+    for (let d of pushDungeons.sort((a, b) => a.level - b.level)) {
         const nextDungeon = getGoalDungeonToRun(d, rioData, true);
         dungeonsToRun.push(nextDungeon);
         runningTotal = Math.ceil(runningTotal + nextDungeon.potentialIncrease)
@@ -239,18 +261,28 @@ const getGoalData = (pushData, rioData, goal) => {
         do {
             let dungeonsSortedDesc = dungeonsToRun.sort((a, b) => b.level - a.level);
             for (let d of dungeonsSortedDesc) {
-                const nextDungeon = getGoalDungeonToRun(d, rioData, true);
-                dungeonsToRun.push(nextDungeon);
+                // Prevent duplicate dungeon/key level combinations from being added for the same affix
+                if (dungeonsToRun.find((dtr) => dtr.name === d.name && dtr.primaryAffix === d.primaryAffix && dtr.level === d.level + 1)) {
+                    continue;
+                }
+                const nextDungeon = getGoalDungeonToRun(d, rioData);
                 runningTotal = Math.ceil(runningTotal + nextDungeon.potentialIncrease)
+                dungeonsToRun.push(nextDungeon);
                 if (runningTotal >= goal) {
                     break;
                 }
             }
         } while (runningTotal < goal)
     }
-    return { dungeons: dungeonsToRun, totalScore: runningTotal };
+
+    dungeonsToRun.forEach((d) => d.potentialIncrease = Math.ceil(d.potentialIncrease));
+    return { dungeons: dungeonsToRun, totalScore: runningTotal, totalPotentialIncrease: Math.ceil(runningTotal - pushData.totalScore) };
 }
 
+/**
+ * See {@link getPushData} for usage
+ * @returns A template object to store data in while calculating which Mythic+ dungeons to complete to increase Mythic+ rating
+ */
 const getBlankPushObject = () => {
     const result = {};
     for (let shortName of Object.keys(dungeonShortnameMap)) {
@@ -260,6 +292,12 @@ const getBlankPushObject = () => {
     return result;
 }
 
+/**
+ * Converts a Raider.io Mythic+ dungeon object into one that is used by {@link postEmbedMessage} to show results to a user
+ * @param {*} rioDungeon Dungeon data retrieved from Raider.io
+ * @param {number} potentialIncrease The potential increase in rating that can be received from completing the given Mythic+ dungeon
+ * @returns A reformatted object containing essential information about completing a Mythic+ dungeon. If no Raider.io dungeon data is provided, `undefined` is returned instead.
+ */
 const convertRioDungeon = (rioDungeon, potentialIncrease) => {
     if (!rioDungeon) return undefined;
 
@@ -269,45 +307,45 @@ const convertRioDungeon = (rioDungeon, potentialIncrease) => {
         shortName,
         primaryAffix,
         potentialIncrease,
-        score: getDungeonScore(level, getAffixCountByKeyLevel(level)),
+        score: getDungeonScore(level),
         level
     };
 }
 
-const getSortedCleanedDungeons = (tyrannical, fortified, sortMethod = 'increase') => {
-    let tyrannicalIncreases = [];
-    let fortifiedIncreases = [];
-    if (tyrannical && tyrannical.length > 0) {
-        tyrannicalIncreases = tyrannical.filter((d) => d.potentialIncrease > 0);
+/**
+ * @param {*[]} dungeons An array of dungeon objects to sort
+ * @param {string} sortMethod The method by which to sort the array of dungeons (defaults to `'increase'`, which sorts them from greatest rating increase to least)
+ * @returns Sorted array of the given dungeons
+ */
+const getSortedCleanedDungeons = (dungeons, sortMethod = 'increase') => {
+    let result = [];
+
+    if (dungeons && dungeons.length > 0) {
+        result = dungeons.filter((d) => d.potentialIncrease > 0);
+
         if (sortMethod === 'alphabetical') {
-            tyrannicalIncreases = tyrannicalIncreases.sort((a, b) => a.name.localeCompare(b.name));
+            result = result.sort((a, b) => a.name.localeCompare(b.name) || a.level - b.level);
         } else if (sortMethod === 'level') {
-            tyrannicalIncreases = tyrannicalIncreases.sort((a, b) => a.level - b.level);
+            result = result.sort((a, b) => a.level - b.level || a.name.localeCompare(b.name));
         } else {
-            tyrannicalIncreases = tyrannicalIncreases.sort((a, b) => b.potentialIncrease - a.potentialIncrease);
+            result = result.sort((a, b) => b.potentialIncrease - a.potentialIncrease || a.name.localeCompare(b.name));
         }
     }
     
-    if (fortified && fortified.length > 0) {
-        fortifiedIncreases = fortified.filter((d) => d.potentialIncrease > 0);
-        if (sortMethod === 'alphabetical') {
-            fortifiedIncreases = fortifiedIncreases.sort((a, b) => a.name.localeCompare(b.name));
-        } else if (sortMethod === 'level') {
-            fortifiedIncreases = fortifiedIncreases.sort((a, b) => a.level - b.level);
-        } else {
-            fortifiedIncreases = fortifiedIncreases.sort((a, b) => b.potentialIncrease - a.potentialIncrease);
-        }
-    }
-    
-    return [...tyrannicalIncreases, ...fortifiedIncreases];
+    return result;
 }
 
-const requestRaiderIoData = async (args) => {
+/**
+ * Retrieves equipped gear and Mythic+ data for the current season for a given character from [Raider.io](https://www.raider.io)
+ * @param {*} qp Object containing query parameter values to be added dynamically
+ * @returns Mythic+ data retrieved from Raider.io
+ */
+const requestRaiderIoData = async (qp) => {
     try {
         return await axios.get('https://raider.io/api/v1/characters/profile', {
             params: {
-                ...args,
-                name: encodeURIComponent(args.name),
+                ...qp,
+                name: encodeURIComponent(qp.name),
                 region: 'us',
                 fields: 'gear,mythic_plus_best_runs,mythic_plus_alternate_runs,mythic_plus_scores_by_season:current'
             }
@@ -318,6 +356,14 @@ const requestRaiderIoData = async (args) => {
     
 }
 
+/**
+ * Dynamically creates and posts a Discord embed message in response to a user executing one of the `/mr-helper` subcommands provided there is data to be shown
+ * @param {*} calcData Calculated data for the given subcommand that should be presented to the user
+ * @param {*} rioData Data retrieved from Raider.io
+ * @param {*} interaction Discord.js bot interaction object containing information about user input and methods to respond to the user with
+ * @returns A `Promise` containing the response to be shown to the user. If there is data to present, this will be in the form of a Discord embed, otherwise a plain message
+ * indicating that there is no data to show will appear
+ */
 const postEmbedMessage = (calcData, rioData, interaction) => {
     const {
         name,
@@ -326,12 +372,81 @@ const postEmbedMessage = (calcData, rioData, interaction) => {
         thumbnail_url,
         mythic_plus_scores_by_season: [{ scores : { all: currentScore } }]
     } = rioData;
+    const subcommand = interaction.options.getSubcommand();
+
+    let noDungeonsText = ''
+    let description = '';
+    let sortMethod;
+    let affixRatingIncreaseText = 'rating increase';
+    let closingLine = '';
+
+    switch (subcommand) {
+        case 'simulate':
+            noDungeonsText = `${name} won't get any rating increase from keys at **Mythic level ${interaction.options.getNumber('level')}**. Try simulating a higher key level.`
+            description = `Here's how your Mythic+ rating could increase by completing the following keys at **Mythic level ${interaction.options.getNumber('level')}** within the time limit:`;
+            sortMethod = interaction.options.getBoolean('alphabetical') ? 'alphabetical' : undefined;
+            affixRatingIncreaseText = 'Simulated ' + affixRatingIncreaseText;
+            closingLine = `Simulated Mythic+ rating after completing these dungeons: **${calcData.totalScore}**`;
+            break;
+        case 'push':
+            noDungeonsText = `Could not calculate data for ${name}. Please try again later.`;
+            description = 'Here are some Mythic+ dungeons you could complete within the time limit to increase your rating:';
+            sortMethod = interaction.options.getBoolean('alphabetical') ? 'alphabetical' : undefined;
+            affixRatingIncreaseText = 'Minimum ' + affixRatingIncreaseText;
+            closingLine = `Minimum Mythic+ rating after completing these dungeons: **${calcData.totalScore + calcData.totalPotentialIncrease}**`;
+            break;
+        case 'goal':
+            noDungeonsText = `Could not calculate data for ${name}. Please try again later.`;
+            description = `Here is a way you could reach your goal Mythic+ rating of ${interaction.options.getNumber('rating')}:`;
+            sortMethod = interaction.options.getString('sort');
+            affixRatingIncreaseText = 'Estimated ' + affixRatingIncreaseText;
+            closingLine = `Estimated Mythic+ rating after completing these dungeons: **${calcData.totalScore}**`;
+            break;
+        default:
+            break;
+    }
+    const dungeonList = getSortedCleanedDungeons(calcData.dungeons, sortMethod);
+
+    if (dungeonList.length === 0) {
+        return Promise.resolve(interaction.reply({ content: noDungeonsText, ephemeral: true }));
+    }
+
     const embed = new EmbedBuilder()
         .setAuthor({ name: `${name} - ${realm}`, url: profile_url })
-        .setDescription(`Here's how your Mythic+ rating could increase by completing the following keys at **Mythic level ${interaction.options.getNumber('level')}** within the time limit:`)
+        .setDescription(description)
         .setThumbnail(thumbnail_url)
-        .addFields({ name: 'Current Mythic+ Rating', value: Math.floor(rioData.mythic_plus_scores_by_season[0].scores.all).toString() })
+        .addFields({ name: 'Current Mythic+ Rating', value: Math.floor(currentScore).toString() })
         .setFooter({ text: 'Click your character\'s name to view its Raider.io profile' });
+
+    let tyranDungeons = '';
+    let tyranIncrease = 0;
+    let fortDungeons = '';
+    let fortIncrease = 0;
+    dungeonList.forEach((dungeon) => {
+        if (dungeon.primaryAffix === 'Tyrannical') {
+            tyranDungeons += `**${dungeon.potentialIncrease} pt${dungeon.potentialIncrease === 1 ? '' : 's'}** - ${dungeon.name}`;
+            if (subcommand !== 'simulate') tyranDungeons += ` (+${dungeon.level})`;
+            tyranDungeons += '\n';
+            tyranIncrease += dungeon.potentialIncrease;
+        } else {
+            fortDungeons += `**${dungeon.potentialIncrease} pt${dungeon.potentialIncrease === 1 ? '' : 's'}** - ${dungeon.name}`;
+            if (subcommand !== 'simulate') fortDungeons += ` (+${dungeon.level})`;
+            fortDungeons += '\n';
+            fortIncrease += dungeon.potentialIncrease;
+        }
+    });
+
+    if (tyranDungeons.length > 0) embed.addFields({ name: 'Tyrannical', value: tyranDungeons, inline: true });
+    if (fortDungeons.length > 0) embed.addFields({ name: 'Fortified', value: fortDungeons, inline: true });
+    if (tyranDungeons.length > 0 || fortDungeons.length > 0) {
+        embed.addFields({ name: ' ', value: ' ' });
+        if (tyranDungeons.length > 0) embed.addFields({ name: affixRatingIncreaseText, value: tyranIncrease.toString(), inline: true });
+        if (fortDungeons.length > 0) embed.addFields({ name: affixRatingIncreaseText, value: fortIncrease.toString(), inline: true });
+    }
+
+    embed.addFields({ name: ' ', value: ' ' }, { name: ' ', value: closingLine });
+
+    return Promise.resolve(interaction.reply({ embeds: [embed], ephemeral: true }));
 }
 
 module.exports = {
@@ -342,23 +457,23 @@ module.exports = {
     .addSubcommand((subcommand) =>
         subcommand.setName('simulate')
         .setDescription('Simulate running all keys at a given keystone level')
-        .addStringOption((option) => option.setName('character').setDescription('Character to fetch Mythic+ data for').setRequired(true))
-        .addNumberOption((option) => option.setName('level').setDescription('Keystone level to simulate running all dungeons at').setRequired(true))
+        .addStringOption((option) => option.setName('character').setDescription('Character to fetch Mythic+ data for').setRequired(true).setMinLength(2).setMaxLength(12))
+        .addNumberOption((option) => option.setName('level').setDescription('Keystone level to simulate running all dungeons at').setRequired(true).setMinValue(2))
         .addStringOption((option) => option.setName('realm').setDescription('Realm a character is on *(if one is not provided, this bot will search for characters on Thrall)*'))
         .addBooleanOption((option) => option.setName('alphabetical').setDescription('Whether to sort dungeons alphabetically or not'))
     )
     .addSubcommand((subcommand) =>
         subcommand.setName('push')
         .setDescription('Quickly find which affix and key level to complete a dungeon with to gain Mythic+ rating')
-        .addStringOption((option) => option.setName('character').setDescription('Character to fetch Mythic+ data for').setRequired(true))
+        .addStringOption((option) => option.setName('character').setDescription('Character to fetch Mythic+ data for').setRequired(true).setMinLength(2).setMaxLength(12))
         .addStringOption((option) => option.setName('realm').setDescription('Realm a character is on *(if one is not provided, this bot will search for characters on Thrall)*'))
         .addBooleanOption((option) => option.setName('alphabetical').setDescription('Whether to sort dungeons alphabetically or not'))
     )
     .addSubcommand((subcommand) =>
         subcommand.setName('goal')
         .setDescription('Learn how you could reach a goal rating (assumes all runs increase key level by 1)')
-        .addStringOption((option) => option.setName('character').setDescription('Character to fetch Mythic+ data for').setRequired(true))
-        .addNumberOption((option) => option.setName('rating').setDescription('The Mythic+ rating you would like to reach').setRequired(true))
+        .addStringOption((option) => option.setName('character').setDescription('Character to fetch Mythic+ data for').setRequired(true).setMinLength(2).setMaxLength(12))
+        .addNumberOption((option) => option.setName('rating').setDescription('The Mythic+ rating you would like to reach').setRequired(true).setMinValue(1))
         .addStringOption((option) => option.setName('realm').setDescription('Realm a character is on *(if one is not provided, this bot will search for characters on Thrall)*'))
         .addStringOption((option) => option.setName('sort').setDescription('How you want to sort the list of dungeons').addChoices(
             { name: 'alphabetical', value: 'alphabetical' },
@@ -368,153 +483,57 @@ module.exports = {
     async execute(interaction) {
         const subCommand = interaction.options.getSubcommand();
         if (subCommand === 'help') {
-            await interaction.reply({ content: 'How to use this bot...', ephemeral: true });
+            const content = '**Mythic Rating Helper** can provide information about completing Mythic+ dungeons at certain keystone levels and how that might impact a character\'s Mythic+ rating.\n\n'
+                + '- `/mr-helper simulate` will simulate a character running all Mythic+ dungeons at a single keystone level\n'
+                + '- `/mr-helper push` will tell which dungeons a character could run to slightly improve their Mythic+ rating\n'
+                + '- `/mr-helper goal` will provide a plan for dungeons a character can complete to reach a goal Mythic+ rating\n\n'
+                + 'Required information for each command is taken via guided inputs to make it clear exactly what information is necessary. This reduces confusion around how to provide information properly.\n'
+                + '*For any questions or issues with this bot, please DM Pran or Tusk*'
+            ;
+            await interaction.reply({ content, ephemeral: true });
         } else {
             try {
-                const args = { realm: interaction.options.getString('realm'), name: interaction.options.getString('character') };
-                if (!args.realm) args.realm = 'thrall';
-                args.realm = args.realm.toLowerCase();
-                const response = await requestRaiderIoData(args);
+                const qp = { realm: interaction.options.getString('realm'), name: interaction.options.getString('character') };
+                if (!qp.realm) qp.realm = 'thrall';
+                // Remove apostrophes and replace spaces with '-' in realm names
+                qp.realm = qp.realm.toLowerCase().replace(/'/gi, '').replace(/\s/gi, '-');
+                const response = await requestRaiderIoData(qp);
                 if (response.response?.data?.error) {
-                    await interaction.reply({ content: 'There was an error retrieving character data. Please try again later.', ephemeral: true });
+                    await interaction.reply({ content: `Couldn't retrieve data for **${capitalizeWord(qp.name)} - ${capitalizeWord(qp.realm)}**. Please try again.`, ephemeral: true });
                     return;
                 }
                 const { data } = response;
                 if (subCommand === 'simulate') {
                     const simmedData = simulateLevel(data, interaction.options.getNumber('level'));
-                    const sorted = getSortedCleanedDungeons(simmedData.tyrannical, simmedData.fortified, interaction.options.getBoolean('alphabetical') ? 'alphabetical' : 'level');
-                    if (sorted.length === 0) {
-                        await interaction.reply({
-                            content: `${data.name} won't get any rating increase from keys at **Mythic level ${interaction.options.getNumber('level')}**. Try simulating a higher key level.`,
-                            ephemeral: true
-                        });
-                        return;
-                    }
-
-                    const embed = new EmbedBuilder()
-                        .setAuthor({ name: `${data.name} - ${data.realm}`, url: data.profile_url })
-                        .setDescription(`Here's how your Mythic+ rating could increase by completing the following keys at **Mythic level ${interaction.options.getNumber('level')}** within the time limit:`)
-                        .setThumbnail(data.thumbnail_url)
-                        .addFields({ name: 'Current Mythic+ Rating', value: Math.floor(data.mythic_plus_scores_by_season[0].scores.all).toString() })
-                        .setFooter({ text: 'Click your character\'s name to view its Raider.io profile' });
-
-                    let tyranDungeons = '';
-                    let tyranIncrease = 0;
-                    let fortDungeons = '';
-                    let fortIncrease = 0;
-                    sorted.forEach((dungeon) => {
-                        if (dungeon.primaryAffix === 'Tyrannical') {
-                            tyranDungeons += `**${dungeon.potentialIncrease} pt${dungeon.potentialIncrease === 1 ? '' : 's'}** - ${dungeon.name}\n`;
-                            tyranIncrease += dungeon.potentialIncrease;
-                        } else {
-                            fortDungeons += `**${dungeon.potentialIncrease} pt${dungeon.potentialIncrease === 1 ? '' : 's'}** - ${dungeon.name}\n`;
-                            fortIncrease += dungeon.potentialIncrease;
-                        }
-                    });
-
-                    if (tyranDungeons.length > 0) embed.addFields({ name: 'Tyrannical', value: tyranDungeons, inline: true });
-                    if (fortDungeons.length > 0) embed.addFields({ name: 'Fortified', value: fortDungeons, inline: true });
-                    if (tyranDungeons.length > 0 || fortDungeons.length > 0) {
-                        embed.addFields({ name: ' ', value: ' ' });
-                        if (tyranDungeons.length > 0) embed.addFields({ name: 'Simulated rating increase', value: tyranIncrease.toString(), inline: true });
-                        if (fortDungeons.length > 0) embed.addFields({ name: 'Simulated rating increase', value: fortIncrease.toString(), inline: true });
-                    }
-
-                    embed.addFields(
-                        { name: ' ', value: ' ' },
-                        { name: ' ', value: `Simulated Mythic+ rating after completing these dungeons: **${simmedData.totalScore}**` }
-                    );
-                    await interaction.reply({ embeds: [embed], ephemeral: true });
+                    await postEmbedMessage(simmedData, data, interaction);
                 } else {
                     const pushData = getPushData(data);
-                    pushData.dungeons = getSortedCleanedDungeons(pushData.dungeons, undefined, interaction.options.getBoolean('alphabetical') ? 'alphabetical' : 'level');
-                    if (pushData.dungeons.length === 0) {
-                        await interaction.reply({ content: `Could not calculate data for ${data.name}. Please try again later.`, ephemeral: true });
-                        return;
-                    }
                     if (subCommand === 'push') {
-                        const embed = new EmbedBuilder()
-                            .setAuthor({ name: `${data.name} - ${data.realm}`, url: data.profile_url })
-                            .setDescription('Here are some Mythic+ dungeons you could complete within the time limit to increase your rating:')
-                            .setThumbnail(data.thumbnail_url)
-                            .addFields({ name: 'Current Mythic+ Rating', value: Math.floor(data.mythic_plus_scores_by_season[0].scores.all).toString() })
-                            .setFooter({ text: 'Click your character\'s name to view its Raider.io profile' });
-                            
-                        let tyranDungeons = '';
-                        let tyranIncrease = 0;
-                        let fortDungeons = '';
-                        let fortIncrease = 0;
-                        pushData.dungeons.forEach((dungeon) => {
-                            if (dungeon.primaryAffix === 'Tyrannical') {
-                                tyranDungeons += `**${dungeon.potentialIncrease} pt${dungeon.potentialIncrease === 1 ? '' : 's'}** - ${dungeon.name} (+${dungeon.level})\n`;
-                                tyranIncrease += dungeon.potentialIncrease;
-                            } else {
-                                fortDungeons += `**${dungeon.potentialIncrease} pt${dungeon.potentialIncrease === 1 ? '' : 's'}** - ${dungeon.name} (+${dungeon.level})\n`;
-                                fortIncrease += dungeon.potentialIncrease;
-                            }
-                        });
-    
-                        if (tyranDungeons.length > 0) embed.addFields({ name: 'Tyrannical', value: tyranDungeons, inline: true });
-                        if (fortDungeons.length > 0) embed.addFields({ name: 'Fortified', value: fortDungeons, inline: true });
-                        if (tyranDungeons.length > 0 || fortDungeons.length > 0) {
-                            embed.addFields({ name: ' ', value: ' ' });
-                            if (tyranDungeons.length > 0) embed.addFields({ name: 'Minimum rating increase', value: tyranIncrease.toString(), inline: true });
-                            if (fortDungeons.length > 0) embed.addFields({ name: 'Minimum rating increase', value: fortIncrease.toString(), inline: true });
-                        }
-    
-                        embed.addFields(
-                            { name: ' ', value: ' ' },
-                            { name: ' ', value: `Minimum Mythic+ rating after completing these dungeons: **${pushData.totalScore + pushData.totalPotentialIncrease}**` }
-                        );
-                        await interaction.reply({ embeds: [embed], ephemeral: true });
-    
+                        await postEmbedMessage(pushData, data, interaction);
                     } else if (subCommand === 'goal') {
-                        if (pushData.totalScore + pushData.totalPotentialIncrease >= interaction.options.getNumber('rating')) {
-                            // Give the user their regular 'push' info
-                            return;
-                        } else {
-                            const goalData = getGoalData(pushData, data, interaction.options.getNumber('rating'));
-                            goalData.dungeons = getSortedCleanedDungeons(goalData.dungeons, undefined, interaction.options.getString('sort'));
-
-                            const embed = new EmbedBuilder()
-                                .setAuthor({ name: `${data.name} - ${data.realm}`, url: data.profile_url })
-                                .setDescription(`Here is a way you could reach your goal Mythic+ rating of ${interaction.options.getNumber('rating')}:`)
-                                .setThumbnail(data.thumbnail_url)
-                                .addFields({ name: 'Current Mythic+ Rating', value: Math.floor(data.mythic_plus_scores_by_season[0].scores.all).toString() })
-                                .setFooter({ text: 'Click your character\'s name to view its Raider.io profile' });
-                            
-                            let tyranDungeons = '';
-                            let tyranIncrease = 0;
-                            let fortDungeons = '';
-                            let fortIncrease = 0;
-                            goalData.dungeons.forEach((dungeon) => {
-                                if (dungeon.primaryAffix === 'Tyrannical') {
-                                    tyranDungeons += `**${dungeon.potentialIncrease} pt${dungeon.potentialIncrease === 1 ? '' : 's'}** - ${dungeon.name} (+${dungeon.level})\n`;
-                                    tyranIncrease += dungeon.potentialIncrease;
-                                } else {
-                                    fortDungeons += `**${dungeon.potentialIncrease} pt${dungeon.potentialIncrease === 1 ? '' : 's'}** - ${dungeon.name} (+${dungeon.level})\n`;
-                                    fortIncrease += dungeon.potentialIncrease;
-                                }
+                        if (data.mythic_plus_scores_by_season[0].scores.all >= interaction.options.getNumber('rating')) {
+                            await interaction.reply({
+                                content: `Your current Mythic+ rating (${Math.floor(data.mythic_plus_scores_by_season[0].scores.all)}) is higher than/equal to your goal of ${interaction.options.getNumber('rating')}`,
+                                ephemeral: true
                             });
-                            
-                            if (tyranDungeons.length > 0) embed.addFields({ name: 'Tyrannical', value: tyranDungeons, inline: true });
-                            if (fortDungeons.length > 0) embed.addFields({ name: 'Fortified', value: fortDungeons, inline: true });
-                            if (tyranDungeons.length > 0 || fortDungeons.length > 0) {
-                                embed.addFields({ name: ' ', value: ' ' });
-                                if (tyranDungeons.length > 0) embed.addFields({ name: 'Estimated rating increase', value: tyranIncrease.toString(), inline: true });
-                                if (fortDungeons.length > 0) embed.addFields({ name: 'Estimated rating increase', value: fortIncrease.toString(), inline: true });
-                            }
-
-                            embed.addFields(
-                                { name: ' ', value: ' ' },
-                                { name: ' ', value: `Estimated Mythic+ rating after completing these dungeons: **${goalData.totalScore}**` }
-                            );
-                            await interaction.reply({ embeds: [embed], ephemeral: true });
+                            return;
                         }
+                        let goalData;
+                        if (pushData.totalScore + pushData.totalPotentialIncrease >= interaction.options.getNumber('rating')) {
+                            goalData = pushData;
+                            goalData.totalScore = pushData.totalScore + pushData.totalPotentialIncrease;
+                        } else {
+                            goalData = getGoalData(pushData, data, interaction.options.getNumber('rating'));
+                        }
+                        await postEmbedMessage(goalData, data, interaction);
                     }
                 }
             } catch (e) {
                 console.error(e);
+                await interaction.reply({
+                    content: 'An error occurred while outputting your results. It is possible the amount of text being written exceeded Discord\'s limits, so please try again with different parameters.',
+                    ephemeral: true
+                });
             }
         }
     }

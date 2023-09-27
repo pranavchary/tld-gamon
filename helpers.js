@@ -12,14 +12,28 @@ const dungeonShortnameMap = {
     'ULD': 'Uldaman'
 };
 
+/**
+ * Determines how many affixes will appear for a dungeon based on its keystone level
+ * @param {number} keyLevel Mythic+ keystone level
+ * @returns Number of affixes that will appear
+ */
 const getAffixCountByKeyLevel = (keyLevel) => {
     if (keyLevel >= 14) return 3;
     if (keyLevel >= 7) return 2;
     return 1;
 }
 
+/**
+ * Does not account for timer bonuses (+2 and +3 keystone upgrades)
+ * @param {number} keyLevel Mythic+ keystone level
+ * @returns Base score for completing a Mythic+ dungeon at the given keystone level within the time limit
+ */
 const getBaseScoreForKeyLevel = (keyLevel) => BASE_SCORE_LEVEL * keyLevel;
 
+/**
+ * @param {number} affixCount Number of affixes that appear in a Mythic+ dungeon
+ * @returns Score for completing a Mythic+ dungeon with the given number of affixes within the time limit
+ */
 const getBaseScoreForAffixCount = (affixCount) => {
     let score = 0;
 
@@ -34,7 +48,13 @@ const getBaseScoreForAffixCount = (affixCount) => {
     return score;
 }
 
-const getDungeonScore = (keyLevel, affixCount) => {
+/**
+ * Includes check for keystone levels above 10, but does not account for timer bonuses (+2 and +3 keystone upgrades)
+ * @param {number} keyLevel Mythic+ keystone level
+ * @returns Score for completing a Mythic+ dungeon
+ */
+const getDungeonScore = (keyLevel) => {
+    const affixCount = getAffixCountByKeyLevel(keyLevel);
     let extraScore = 0;
     if (keyLevel > 10) {
         const levelsAboveTen = keyLevel - 10;
@@ -44,6 +64,7 @@ const getDungeonScore = (keyLevel, affixCount) => {
     return +(BASE_SCORE_COMPLETION + getBaseScoreForKeyLevel(keyLevel) + getBaseScoreForAffixCount(affixCount) + extraScore).toFixed(1);
 }
 
+/* @todo Check if this method can/should be used anywhere */
 const getTargetKeystoneLevel = (highestRunDungeon, currentDungeon) => {
     const levelDiff = highestRunDungeon.mythic_level - currentDungeon.mythic_level;
     let targetLevel = highestRunDungeon.mythic_level;
@@ -59,11 +80,14 @@ const getTargetKeystoneLevel = (highestRunDungeon, currentDungeon) => {
     return targetLevel;
 }
 
+const capitalizeWord = (word) => {
+    if (!word) return '';
+    return word.charAt(0).toUpperCase() + word.substring(1);
+}
+
 module.exports = {
-    getAffixCountByKeyLevel,
-    getBaseScoreForKeyLevel,
-    getBaseScoreForAffixCount,
     getDungeonScore,
     getTargetKeystoneLevel,
+    capitalizeWord,
     dungeonShortnameMap
 }
