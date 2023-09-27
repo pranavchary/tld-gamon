@@ -80,8 +80,14 @@ const getTargetKeystoneLevel = (highestRunDungeon, currentDungeon) => {
     return targetLevel;
 }
 
+const capitalizeWord = (word) => {
+    if (!word) return '';
+    return word.charAt(0).toUpperCase() + word.substring(1);
+}
+
 module.exports = {
     getDungeonScore,
     getTargetKeystoneLevel,
+    capitalizeWord,
     dungeonShortnameMap
 }

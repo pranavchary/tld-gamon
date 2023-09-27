@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('@discordjs/builders');
 const { default: axios } = require('axios');
-const { getDungeonScore, dungeonShortnameMap } = require('../helpers');
+const { getDungeonScore, capitalizeWord, dungeonShortnameMap } = require('../helpers');
 
 /**
  * Checks Raider.io Mythic+ data for any missing dungeon/affix combinations and populates the appropriate arrays with enough data to continue simulation
@@ -169,7 +169,7 @@ const getPushData = (rioData) => {
             targetAffix = bestAffix;
             bestAffix = 'fortified';
         }
-        dungeon.primaryAffix = targetAffix.charAt(0).toUpperCase() + targetAffix.substring(1);
+        dungeon.primaryAffix = capitalizeWord(targetAffix);
         let altScore = 0;
         const bestScore = +(pushDungeon[bestAffix].score * 1.5).toFixed(1);
         if (pushDungeon[targetAffix].score) altScore = +(pushDungeon[targetAffix].score / 2).toFixed(1);
@@ -457,23 +457,23 @@ module.exports = {
     .addSubcommand((subcommand) =>
         subcommand.setName('simulate')
         .setDescription('Simulate running all keys at a given keystone level')
-        .addStringOption((option) => option.setName('character').setDescription('Character to fetch Mythic+ data for').setRequired(true))
-        .addNumberOption((option) => option.setName('level').setDescription('Keystone level to simulate running all dungeons at').setRequired(true))
+        .addStringOption((option) => option.setName('character').setDescription('Character to fetch Mythic+ data for').setRequired(true).setMinLength(2).setMaxLength(12))
+        .addNumberOption((option) => option.setName('level').setDescription('Keystone level to simulate running all dungeons at').setRequired(true).setMinValue(2))
         .addStringOption((option) => option.setName('realm').setDescription('Realm a character is on *(if one is not provided, this bot will search for characters on Thrall)*'))
         .addBooleanOption((option) => option.setName('alphabetical').setDescription('Whether to sort dungeons alphabetically or not'))
     )
     .addSubcommand((subcommand) =>
         subcommand.setName('push')
         .setDescription('Quickly find which affix and key level to complete a dungeon with to gain Mythic+ rating')
-        .addStringOption((option) => option.setName('character').setDescription('Character to fetch Mythic+ data for').setRequired(true))
+        .addStringOption((option) => option.setName('character').setDescription('Character to fetch Mythic+ data for').setRequired(true).setMinLength(2).setMaxLength(12))
         .addStringOption((option) => option.setName('realm').setDescription('Realm a character is on *(if one is not provided, this bot will search for characters on Thrall)*'))
         .addBooleanOption((option) => option.setName('alphabetical').setDescription('Whether to sort dungeons alphabetically or not'))
     )
     .addSubcommand((subcommand) =>
         subcommand.setName('goal')
         .setDescription('Learn how you could reach a goal rating (assumes all runs increase key level by 1)')
-        .addStringOption((option) => option.setName('character').setDescription('Character to fetch Mythic+ data for').setRequired(true))
-        .addNumberOption((option) => option.setName('rating').setDescription('The Mythic+ rating you would like to reach').setRequired(true))
+        .addStringOption((option) => option.setName('character').setDescription('Character to fetch Mythic+ data for').setRequired(true).setMinLength(2).setMaxLength(12))
+        .addNumberOption((option) => option.setName('rating').setDescription('The Mythic+ rating you would like to reach').setRequired(true).setMinValue(1))
         .addStringOption((option) => option.setName('realm').setDescription('Realm a character is on *(if one is not provided, this bot will search for characters on Thrall)*'))
         .addStringOption((option) => option.setName('sort').setDescription('How you want to sort the list of dungeons').addChoices(
             { name: 'alphabetical', value: 'alphabetical' },
@@ -483,15 +483,23 @@ module.exports = {
     async execute(interaction) {
         const subCommand = interaction.options.getSubcommand();
         if (subCommand === 'help') {
-            await interaction.reply({ content: 'How to use this bot...', ephemeral: true });
+            const content = '**Mythic Rating Helper** can provide information about completing Mythic+ dungeons at certain keystone levels and how that might impact a character\'s Mythic+ rating.\n\n'
+                + '- `/mr-helper simulate` will simulate a character running all Mythic+ dungeons at a single keystone level\n'
+                + '- `/mr-helper push` will tell which dungeons a character could run to slightly improve their Mythic+ rating\n'
+                + '- `/mr-helper goal` will provide a plan for dungeons a character can complete to reach a goal Mythic+ rating\n\n'
+                + 'Required information for each command is taken via guided inputs to make it clear exactly what information is necessary. This reduces confusion around how to provide information properly.\n'
+                + '*For any questions or issues with this bot, please DM Pran or Tusk*'
+            ;
+            await interaction.reply({ content, ephemeral: true });
         } else {
             try {
                 const qp = { realm: interaction.options.getString('realm'), name: interaction.options.getString('character') };
                 if (!qp.realm) qp.realm = 'thrall';
-                qp.realm = qp.realm.toLowerCase();
+                // Remove apostrophes and replace spaces with '-' in realm names
+                qp.realm = qp.realm.toLowerCase().replace(/'/gi, '').replace(/\s/gi, '-');
                 const response = await requestRaiderIoData(qp);
                 if (response.response?.data?.error) {
-                    await interaction.reply({ content: 'There was an error retrieving character data. Please try again later.', ephemeral: true });
+                    await interaction.reply({ content: `Couldn't retrieve data for **${capitalizeWord(qp.name)} - ${capitalizeWord(qp.realm)}**. Please try again.`, ephemeral: true });
                     return;
                 }
                 const { data } = response;
