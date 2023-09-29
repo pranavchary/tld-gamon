@@ -29,6 +29,7 @@ const cleanMythicPlusData = (rioData, keyLevel) => {
             score: 0,
             dungeon: dungeonShortnameMap[bestToAdd[i]],
             short_name: bestToAdd[i],
+            num_keystone_updgrades: 1,
             affixes: [{ name: 'Fortified' }]
         };
 
@@ -41,6 +42,7 @@ const cleanMythicPlusData = (rioData, keyLevel) => {
             score: 0,
             dungeon: dungeonShortnameMap[altToAdd[i]],
             short_name: altToAdd[i],
+            num_keystone_updgrades: 1,
             affixes: [{ name: 'Tyrannical' }]
         };
 
