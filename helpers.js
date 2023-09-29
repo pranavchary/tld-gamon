@@ -2,15 +2,52 @@ if (!process.env.NODE_ENV) require('dotenv').config();
 const BASE_SCORE_LEVEL = 7.5;
 const BASE_SCORE_COMPLETION = 37.5;
 const dungeonShortnameMap = {
-    'BH': 'Brackenhide Hollow',
-    'FH': 'Freehold',
-    'HOI': 'Halls of Infusion',
-    'NL': 'Neltharion\'s Lair',
-    'NELT': 'Neltharus',
-    'UNDR': 'Underrot',
-    'VP': 'Vortex Pinnacle',
-    'ULD': 'Uldaman'
+    BH: 'Brackenhide Hollow',
+    FH: 'Freehold',
+    HOI: 'Halls of Infusion',
+    NL: 'Neltharion\'s Lair',
+    NELT: 'Neltharus',
+    UNDR: 'Underrot',
+    VP: 'Vortex Pinnacle',
+    ULD: 'Uldaman'
 };
+const specNameMap = {
+    Affliction: 'Aff',
+    Assassination: 'Sin',
+    'Beast Mastery': 'BM',
+    Brewmaster: 'BM',
+    Augmentation: 'Aug',
+    Demonology: 'Demo',
+    Destruction: 'Destro',
+    Devastation: 'Dev',
+    Discipline: 'Disc',
+    Elemental: 'Ele',
+    Enhancement: 'Enhance',
+    Marksmanship: 'MM',
+    Mistweaver: "MW",
+    Preservation: 'Pres',
+    Protection: 'Prot',
+    Restoration: 'Resto',
+    Retribution: 'Ret',
+    Subtlety: 'Sub',
+    Windwalker: 'WW'
+};
+
+/**
+ * @param {string} text The text to capitalize
+ * @returns A version of the provided text with the first letter capitalized and the remaining letters in lowercase
+ */
+const capitalizeText = (text) => {
+    if (!text) return '';
+    return text.charAt(0).toUpperCase() + text.substring(1).toLowerCase();
+};
+
+/**
+ * Used to eliminate floating point arithmetic issues that frequently occur in JavaScript
+ * @param {number} num The number to sanitize. Can be a single number, a single math operation, or a series of operations that results in a number output
+ * @returns The number provided fixed to a single decimal point
+ */
+const sanitizeNumber = (num) => +(num.toFixed(1));
 
 /**
  * Determines how many affixes will appear for a dungeon based on its keystone level
@@ -21,7 +58,7 @@ const getAffixCountByKeyLevel = (keyLevel) => {
     if (keyLevel >= 14) return 3;
     if (keyLevel >= 7) return 2;
     return 1;
-}
+};
 
 /**
  * Does not account for timer bonuses (+2 and +3 keystone upgrades)
@@ -46,23 +83,23 @@ const getBaseScoreForAffixCount = (affixCount) => {
     }
 
     return score;
-}
+};
 
 /**
  * Includes check for keystone levels above 10, but does not account for timer bonuses (+2 and +3 keystone upgrades)
  * @param {number} keyLevel Mythic+ keystone level
- * @returns Score for completing a Mythic+ dungeon
+ * @returns An object containing the dungeon score and weighted ratings for best and alternate runs for a completed Mythic+ dungeon
  */
-const getDungeonScore = (keyLevel) => {
+const getDungeonRating = (keyLevel) => {
     const affixCount = getAffixCountByKeyLevel(keyLevel);
     let extraScore = 0;
     if (keyLevel > 10) {
-        const levelsAboveTen = keyLevel - 10;
-        extraScore = levelsAboveTen * 3;
+        extraScore = (keyLevel - 10) * 3;
     }
 
-    return +(BASE_SCORE_COMPLETION + getBaseScoreForKeyLevel(keyLevel) + getBaseScoreForAffixCount(affixCount) + extraScore).toFixed(1);
-}
+    const bestRating = sanitizeNumber(BASE_SCORE_COMPLETION + getBaseScoreForKeyLevel(keyLevel) + getBaseScoreForAffixCount(affixCount) + extraScore);
+    return { bestRating, altRating: sanitizeNumber(bestRating / 3), score: sanitizeNumber(bestRating / 1.5) };
+};
 
 /* @todo Check if this method can/should be used anywhere */
 const getTargetKeystoneLevel = (highestRunDungeon, currentDungeon) => {
@@ -78,16 +115,13 @@ const getTargetKeystoneLevel = (highestRunDungeon, currentDungeon) => {
     }
 
     return targetLevel;
-}
-
-const capitalizeWord = (word) => {
-    if (!word) return '';
-    return word.charAt(0).toUpperCase() + word.substring(1);
-}
+};
 
 module.exports = {
-    getDungeonScore,
+    capitalizeText,
+    sanitizeNumber,
+    getDungeonRating,
     getTargetKeystoneLevel,
-    capitalizeWord,
-    dungeonShortnameMap
-}
+    dungeonShortnameMap,
+    specNameMap
+};
