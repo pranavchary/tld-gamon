@@ -541,8 +541,8 @@ module.exports = {
             { name: 'level', value: 'level' },
         ))
     )
-    .addSubcommand((subcommand) => subcommand.setName('says').setDescription('Hear what the Hero of Orgrimmar has to say'))
-    .addSubcommand((subcommand) => subcommand.setName('shouts').setDescription('We all know which quote you\'re looking for...')),
+    .addSubcommand((subcommand) => subcommand.setName('says').setDescription('The Hero of Orgrimmar will whisper sweet nothings into your ear'))
+    .addSubcommand((subcommand) => subcommand.setName('shouts').setDescription('Inspire the entire channel with a rallying cry! But we all know which quote you\'re looking for...')),
     async execute(interaction) {
         const subCommand = interaction.options.getSubcommand();
         if (subCommand === 'help') {
@@ -550,7 +550,7 @@ module.exports = {
                 + '- `/gamon simulate` will simulate a character running all Mythic+ dungeons at a single keystone level\n'
                 + '- `/gamon push` will tell which dungeons a character could run to slightly improve their Mythic+ rating\n'
                 + '- `/gamon goal` will provide a plan for dungeons a character can complete to reach a goal Mythic+ rating\n'
-                + '- `/gamon says` will treat you to a nice quote from everyone\'s favorite Tauren.\n'
+                + '- `/gamon says` will treat you to a nice quote from everyone\'s favorite Tauren (just between the two of you)\n'
                 + '- `/gamon shouts` will inspire everyone in the channel with an epic shout from Gamon himself!\n\n'
                 + 'Required information for each command is taken via guided inputs to make it clear exactly what information is necessary. This reduces confusion around how to provide information properly.\n'
                 + '*For any questions or issues with this bot, please DM Pran or Tusk*';

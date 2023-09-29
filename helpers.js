@@ -1,5 +1,5 @@
 if (!process.env.NODE_ENV) require('dotenv').config();
-const { env: { GAMON_SHOUT_ID } } = process;
+const { env: { GAMON_SHOUT_ID, STORM_BOLT_ID, GOREHOWL_ID } } = process;
 const BASE_SCORE_LEVEL = 7.5;
 const BASE_SCORE_COMPLETION = 37.5;
 const dungeonShortnameMap = {
@@ -44,8 +44,8 @@ const sayQuotes = [
 const shoutQuotes = [
     'THIS ENDS HERE!',
     `<:gamon_shout:${GAMON_SHOUT_ID}> I, GAMON, WILL SAVE US!`,
-    ':axe: TASTE MY AXE!',
-    'I AM A STORM OF PAIN!',
+    `<:gorehowl:${GOREHOWL_ID}> TASTE MY AXE!`,
+    `<:storm_bolt:${STORM_BOLT_ID}> I AM A STORM OF PAIN!`,
 ];
 
 /**
