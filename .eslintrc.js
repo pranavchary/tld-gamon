@@ -9,4 +9,9 @@ module.exports = {
         requireConfigFile: false,
         ecmaVersion: 2023
     },
-}
+    rules: {
+        semi: ['error', 'always'],
+        'semi-style': ['error', 'last'],
+        'eol-last': ['error', 'always']
+    }
+};
