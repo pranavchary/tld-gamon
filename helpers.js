@@ -1,4 +1,5 @@
 if (!process.env.NODE_ENV) require('dotenv').config();
+const { env: { GAMON_SHOUT_ID } } = process;
 const BASE_SCORE_LEVEL = 7.5;
 const BASE_SCORE_COMPLETION = 37.5;
 const dungeonShortnameMap = {
@@ -32,6 +33,20 @@ const specNameMap = {
     Subtlety: 'Sub',
     Windwalker: 'WW'
 };
+
+const sayQuotes = [
+    'Many times have I fallen at the hands of an orc and many times have I risen again.',
+    'For every orc that struck me, I will cleave a thousand of their skulls! This ends here!',
+    'For the Horde, my friend.',
+    'I may be bruised and beaten, but the hatred boils inside me.'
+];
+
+const shoutQuotes = [
+    'THIS ENDS HERE!',
+    `<:gamon_shout:${GAMON_SHOUT_ID}> I, GAMON, WILL SAVE US!`,
+    ':axe: TASTE MY AXE!',
+    'I AM A STORM OF PAIN!',
+];
 
 /**
  * @param {string} text The text to capitalize
@@ -123,5 +138,7 @@ module.exports = {
     getDungeonRating,
     getTargetKeystoneLevel,
     dungeonShortnameMap,
-    specNameMap
+    specNameMap,
+    sayQuotes,
+    shoutQuotes
 };

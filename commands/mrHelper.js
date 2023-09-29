@@ -5,7 +5,9 @@ const {
     sanitizeNumber,
     getDungeonRating,
     dungeonShortnameMap,
-    specNameMap
+    specNameMap,
+    sayQuotes,
+    shoutQuotes
 } = require('../helpers');
 
 let currentPrimaryAffix;
@@ -409,7 +411,7 @@ const getCurrentWeekPrimaryAffix = () => {
 };
 
 /**
- * Dynamically creates and posts a Discord embed message in response to a user executing one of the `/mr-helper` subcommands provided there is data to be shown
+ * Dynamically creates and posts a Discord embed message in response to a user executing one of the `/gamon` subcommands provided there is data to be shown
  * @param {*} calcData Calculated data for the given subcommand that should be presented to the user
  * @param {*} rioData Data retrieved from Raider.io
  * @param {*} interaction Discord.js bot interaction object containing information about user input and methods to respond to the user with
@@ -510,9 +512,9 @@ const postEmbedMessage = (calcData, rioData, interaction) => {
 
 module.exports = {
     data: new SlashCommandBuilder()
-    .setName('mr-helper')
+    .setName('gamon')
     .setDescription('Find the dungeons you need to improve your mythic rating!')
-    .addSubcommand((subcommand) => subcommand.setName('help').setDescription('Learn how this bot works'))
+    .addSubcommand((subcommand) => subcommand.setName('help').setDescription('Learn what Gamon can do for you'))
     .addSubcommand((subcommand) =>
         subcommand.setName('simulate')
         .setDescription('Simulate running all keys at a given keystone level')
@@ -538,18 +540,30 @@ module.exports = {
             { name: 'alphabetical', value: 'alphabetical' },
             { name: 'level', value: 'level' },
         ))
-    ),
+    )
+    .addSubcommand((subcommand) => subcommand.setName('says').setDescription('Hear what the Hero of Orgrimmar has to say'))
+    .addSubcommand((subcommand) => subcommand.setName('shouts').setDescription('We all know which quote you\'re looking for...')),
     async execute(interaction) {
         const subCommand = interaction.options.getSubcommand();
         if (subCommand === 'help') {
             const content = '**Mythic Rating Helper** can provide information about completing Mythic+ dungeons at certain keystone levels and how that might impact a character\'s Mythic+ rating.\n\n'
-                + '- `/mr-helper simulate` will simulate a character running all Mythic+ dungeons at a single keystone level\n'
-                + '- `/mr-helper push` will tell which dungeons a character could run to slightly improve their Mythic+ rating\n'
-                + '- `/mr-helper goal` will provide a plan for dungeons a character can complete to reach a goal Mythic+ rating\n\n'
+                + '- `/gamon simulate` will simulate a character running all Mythic+ dungeons at a single keystone level\n'
+                + '- `/gamon push` will tell which dungeons a character could run to slightly improve their Mythic+ rating\n'
+                + '- `/gamon goal` will provide a plan for dungeons a character can complete to reach a goal Mythic+ rating\n'
+                + '- `/gamon says` will treat you to a nice quote from everyone\'s favorite Tauren.\n'
+                + '- `/gamon shouts` will inspire everyone in the channel with an epic shout from Gamon himself!\n\n'
                 + 'Required information for each command is taken via guided inputs to make it clear exactly what information is necessary. This reduces confusion around how to provide information properly.\n'
                 + '*For any questions or issues with this bot, please DM Pran or Tusk*';
             await interaction.reply({ content, ephemeral: true });
-        } else {
+        } else if (subCommand === 'says') {
+            const rand = Math.floor(Math.random() * sayQuotes.length);
+            const content = 'Gamon whispers: ' + sayQuotes[rand];
+            await interaction.reply({ content, ephemeral: true });
+        } else if (subCommand === 'shouts') {
+            const rand = Math.floor(Math.random() * shoutQuotes.length);
+            const content = shoutQuotes[rand];
+            await interaction.reply({ content });
+        }  else {
             try {
                 const qp = { realm: interaction.options.getString('realm'), name: interaction.options.getString('character') };
                 if (!qp.realm) qp.realm = 'thrall';

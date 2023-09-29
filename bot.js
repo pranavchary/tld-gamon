@@ -23,18 +23,18 @@ for (const file of commandFiles) {
 
 // Execute when bot is ready to run
 bot.on('ready', () => {
-	console.info('TLD M+ Helper is up and running');
+	console.info('[READY] I, Gamon, will save us!');
 });
 
 // Execute when bot encounters an error
 bot.on('error', (error) => {
-	console.info('TLD M+ Helper encountered an error:', error.name, error.message);
+	console.info('[ERROR] I will not fall again!', error.name, error.message);
 	console.error(error.stack);
 });
 
 // Execute when bot disconnects for any reason once live
 bot.on('disconnect', (...params) => {
-	console.warn('TLD M+ Helper disconnected. See log below:');
+	console.warn('[DISCONNECT] It cannot end... like... this...');
 	console.warn(params);
 });
 
@@ -52,9 +52,9 @@ bot.on(Events.InteractionCreate, async (interaction) => {
 	} catch (error) {
 		console.error(error);
 		if (interaction.replied || interaction.deferred) {
-			await interaction.followUp({ content: 'There was an error while executing this command', ephemeral: true });
+			await interaction.followUp({ content: 'I, Gamon, am confused as to what just happened...', ephemeral: true });
 		} else {
-			await interaction.reply({ content: 'There was an error while executing this command', ephemeral: true });
+			await interaction.reply({ content: 'I, Gamon, could not execute this command', ephemeral: true });
 		}
 	}
 });
