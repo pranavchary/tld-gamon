@@ -200,6 +200,7 @@ const getPushData = (rioData) => {
             // providing a more accurate minimum rating increase
             dungeon.primaryAffix = capitalizeText(targetAffix);
             dungeon.level = pushDungeon[otherAffix].mythic_level - (pushDungeon[otherAffix].num_keystone_upgrades > 0 ? 0 : 1);
+            if (dungeon.level < 2) dungeon.level = 2;
             if (pushDungeon[otherAffix]) bestRating = pushDungeon[otherAffix].bestRating;
             altRating = sanitizeNumber(getDungeonRating(dungeon.level).altRating);
             currentDungeonRating = pushDungeon[otherAffix].bestRating + pushDungeon[targetAffix].altRating;
