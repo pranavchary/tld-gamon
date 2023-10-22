@@ -3,12 +3,14 @@ const { default: axios } = require('axios');
 const {
     capitalizeText,
     sanitizeNumber,
-    getDungeonRating,
-    dungeonShortnameMap,
-    specNameMap,
-    sayQuotes,
-    shoutQuotes
+    getDungeonRating
 } = require('../helpers');
+const {
+    DUNGEON_SHORTNAME_MAP,
+    SPEC_SHORTNAME_MAP,
+    SAY_QUOTES,
+    SHOUT_QUOTES
+} = require('../constants');
 
 let currentPrimaryAffix;
 
@@ -20,7 +22,7 @@ let currentPrimaryAffix;
  */
 const cleanMythicPlusData = (rioData, keyLevel) => {
     const { mythic_plus_best_runs: bestRuns, mythic_plus_alternate_runs: altRuns, ...cleanData } = rioData;
-    const dungeonShortNames = Object.keys(dungeonShortnameMap);
+    const dungeonShortNames = Object.keys(DUNGEON_SHORTNAME_MAP);
 
     const bestToAdd = dungeonShortNames.filter((d) => !bestRuns.map((r) => r.short_name).includes(d));
     const altToAdd = dungeonShortNames.filter((d) => !altRuns.map((r) => r.short_name).includes(d));
@@ -29,7 +31,7 @@ const cleanMythicPlusData = (rioData, keyLevel) => {
         const dungeon = {
             mythic_level: keyLevel,
             score: 0,
-            dungeon: dungeonShortnameMap[bestToAdd[i]],
+            dungeon: DUNGEON_SHORTNAME_MAP[bestToAdd[i]],
             short_name: bestToAdd[i],
             num_keystone_updgrades: 1,
             affixes: [{ name: 'Fortified' }]
@@ -42,7 +44,7 @@ const cleanMythicPlusData = (rioData, keyLevel) => {
         const dungeon = {
             mythic_level: keyLevel,
             score: 0,
-            dungeon: dungeonShortnameMap[altToAdd[i]],
+            dungeon: DUNGEON_SHORTNAME_MAP[altToAdd[i]],
             short_name: altToAdd[i],
             num_keystone_updgrades: 1,
             affixes: [{ name: 'Tyrannical' }]
@@ -77,7 +79,7 @@ const simulateLevel = (rioData, keyLevel) => {
 
     for (let bestRun of mythic_plus_best_runs) {
         const dungeon = {
-            name: dungeonShortnameMap[bestRun.short_name],
+            name: DUNGEON_SHORTNAME_MAP[bestRun.short_name],
             shortName: bestRun.short_name,
             primaryAffix: bestRun.affixes[0].name,
         };
@@ -103,7 +105,7 @@ const simulateLevel = (rioData, keyLevel) => {
 
     for (let altRun of mythic_plus_alternate_runs) {
         const dungeon = {
-            name: dungeonShortnameMap[altRun.short_name],
+            name: DUNGEON_SHORTNAME_MAP[altRun.short_name],
             shortName: altRun.short_name,
             primaryAffix: altRun.affixes[0].name,
         };
@@ -166,7 +168,7 @@ const getPushData = (rioData) => {
     for (let shortName of Object.keys(push)) {
         const pushDungeon = push[shortName];
         const dungeon = {
-            name: dungeonShortnameMap[shortName],
+            name: DUNGEON_SHORTNAME_MAP[shortName],
             shortName: shortName,
         };
         if (!pushDungeon.fortified.score && !pushDungeon.tyrannical.score) {
@@ -247,7 +249,7 @@ const getGoalDungeonToRun = (dungeon, rioData, useRioUpgrades = false) => {
     alt = convertRioDungeon(alt, 0);
     if (!alt) {
         alt = {
-            name: dungeonShortnameMap[dungeon.shortName],
+            name: DUNGEON_SHORTNAME_MAP[dungeon.shortName],
             shortName: dungeon.shortName,
             primaryAffix: dungeon.primaryAffix === 'Fortified' ? 'Tyrannical' : 'Fortified',
             potentialIncrease: getDungeonRating(2).altRating,
@@ -322,7 +324,7 @@ const getGoalData = (pushData, rioData, goal) => {
  */
 const getBlankPushObject = () => {
     const result = {};
-    for (let shortName of Object.keys(dungeonShortnameMap)) {
+    for (let shortName of Object.keys(DUNGEON_SHORTNAME_MAP)) {
         result[shortName] = { tyrannical: {}, fortified: {} };
     }
 
@@ -347,7 +349,7 @@ const convertRioDungeon = (rioDungeon, potentialIncrease, isBestRun = false) => 
     } = rioDungeon;
 
     return {
-        name: dungeonShortnameMap[shortName],
+        name: DUNGEON_SHORTNAME_MAP[shortName],
         shortName,
         primaryAffix,
         potentialIncrease,
@@ -357,7 +359,7 @@ const convertRioDungeon = (rioDungeon, potentialIncrease, isBestRun = false) => 
 };
 
 /**
- * Used by {@link postEmbedMessage}
+ * Used by {@link postMythicPlusEmbedMessage}
  * @param {*[]} dungeons An array of dungeon objects to sort
  * @param {string} sortMethod The method by which to sort the array of dungeons (defaults to `'increase'`, which sorts them from greatest rating increase to least)
  * @returns Sorted array of the given dungeons
@@ -418,7 +420,7 @@ const getCurrentWeekPrimaryAffix = () => {
  * @returns A `Promise` containing the response to be shown to the user. If there is data to present, this will be in the form of a Discord embed, otherwise a plain message
  * indicating that there is no data to show will appear
  */
-const postEmbedMessage = (calcData, rioData, interaction) => {
+const postMythicPlusEmbedMessage = (calcData, rioData, interaction) => {
     const {
         name,
         class: playerClass,
@@ -432,7 +434,7 @@ const postEmbedMessage = (calcData, rioData, interaction) => {
     const subcommand = interaction.options.getSubcommand();
 
     let noDungeonsText = '';
-    let description = `*${ilvl} ${specNameMap[spec] || spec} ${playerClass}*\n\n`;
+    let description = `*${ilvl} ${SPEC_SHORTNAME_MAP[spec] || spec} ${playerClass}*\n\n`;
     let sortMethod;
     let affixRatingIncreaseText = 'rating increase';
     let closingLine = '';
@@ -556,14 +558,14 @@ module.exports = {
                 + '*For any questions or issues with this bot, please DM Pran or Tusk*';
             await interaction.reply({ content, ephemeral: true });
         } else if (subCommand === 'says') {
-            const rand = Math.floor(Math.random() * sayQuotes.length);
-            const content = 'Gamon whispers: ' + sayQuotes[rand];
+            const rand = Math.floor(Math.random() * SAY_QUOTES.length);
+            const content = 'Gamon whispers: ' + SAY_QUOTES[rand];
             await interaction.reply({ content, ephemeral: true });
         } else if (subCommand === 'shouts') {
-            const rand = Math.floor(Math.random() * shoutQuotes.length);
-            const content = shoutQuotes[rand];
+            const rand = Math.floor(Math.random() * SHOUT_QUOTES.length);
+            const content = SHOUT_QUOTES[rand];
             await interaction.reply({ content });
-        }  else {
+        } else {
             try {
                 const qp = { realm: interaction.options.getString('realm'), name: interaction.options.getString('character') };
                 if (!qp.realm) qp.realm = 'thrall';
@@ -579,11 +581,11 @@ module.exports = {
                 const { data } = response;
                 if (subCommand === 'simulate') {
                     const simmedData = simulateLevel(data, interaction.options.getNumber('level'));
-                    await postEmbedMessage(simmedData, data, interaction);
+                    await postMythicPlusEmbedMessage(simmedData, data, interaction);
                 } else {
                     const pushData = getPushData(data);
                     if (subCommand === 'push') {
-                        await postEmbedMessage(pushData, data, interaction);
+                        await postMythicPlusEmbedMessage(pushData, data, interaction);
                     } else if (subCommand === 'goal') {
                         const { mythic_plus_scores_by_season: [{ scores : { all: currentRating } }] } = data;
                         if (currentRating >= interaction.options.getNumber('rating')) {
@@ -594,7 +596,7 @@ module.exports = {
                             return;
                         }
                         const goalData = getGoalData(pushData, data, interaction.options.getNumber('rating'));
-                        await postEmbedMessage(goalData, data, interaction);
+                        await postMythicPlusEmbedMessage(goalData, data, interaction);
                     }
                 }
             } catch (e) {

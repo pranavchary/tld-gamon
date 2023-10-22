@@ -1,6 +1,6 @@
 {
   "name": "tld-gamon",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Discord bot for The Last Dynasty (US-Thrall) to use in their Discord server. Based on mr-helper by Cory Meikle",
   "main": "bot.js",
   "scripts": {
