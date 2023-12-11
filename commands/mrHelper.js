@@ -555,7 +555,8 @@ module.exports = {
                 + '- `/gamon says` will treat you to a nice quote from everyone\'s favorite Tauren (just between the two of you)\n'
                 + '- `/gamon shouts` will inspire everyone in the channel with an epic shout from Gamon himself!\n\n'
                 + 'Required information for each command is taken via guided inputs to make it clear exactly what information is necessary. This reduces confusion around how to provide information properly.\n'
-                + '*For any questions or issues with this bot, please DM Pran or Tusk*';
+                // + '*For any questions or issues with this bot, please DM Pran or Tusk*';
+                + '*For any questions or issues with this bot, please DM Pran (@Pranavius)*';
             await interaction.reply({ content, ephemeral: true });
         } else if (subCommand === 'says') {
             const rand = Math.floor(Math.random() * SAY_QUOTES.length);
@@ -602,7 +603,8 @@ module.exports = {
             } catch (e) {
                 console.error(e);
                 await interaction.reply({
-                    content: 'An error occurred while fetching your results. This could be an issue with Radier.io or with Discord itself. Please DM Pran or Tusk what you were trying to do when this happened, or try again in a few moments.',
+                    // content: 'An error occurred while fetching your results. This could be an issue with Radier.io or with Discord itself. Please DM Pran or Tusk what you were trying to do when this happened, or try again in a few moments.',
+                    content: 'An error occurred while fetching your results. This could be an issue with Radier.io or with Discord itself. Please DM Pran (@Pranavius) what you were trying to do when this happened, or try again in a few moments.',
                     ephemeral: true
                 });
             }
