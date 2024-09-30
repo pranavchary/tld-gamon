@@ -10,6 +10,8 @@ What Gamon can do for you:
 - Tell which dungeons a character could run to slightly improve their Mythic+ rating, prioritizing the current week's main affix (Tyrannical or Fortified)
 - Provide a plan for dungeons a character can complete to reach a goal Mythic+ rating
 
+*Last update: The War Within Season 1*
+
 ## TLD Links
 - [Raider.io](https://raider.io/guilds/us/thrall/The%20Last%20Dynasty)
 - [Warcraft Logs](https://www.warcraftlogs.com/guild/us/thrall/the%20last%20dynasty)
