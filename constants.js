@@ -3,14 +3,14 @@ const { env: { GAMON_SHOUT_ID, STORM_BOLT_ID, GOREHOWL_ID } } = process;
 const BASE_SCORE_LEVEL = 7.5;
 const BASE_SCORE_COMPLETION = 37.5;
 const DUNGEON_SHORTNAME_MAP = {
-    AD: 'Atal\'Dazar',
-    BRH: 'Black Rook Hold',
-    FALL: 'Galakrond\'s Fall',
-    RISE: 'Murozond\'s Rise',
-    DHT: 'Darkheart Thicket',
-    EB: 'Everbloom',
-    TOTT: 'Throne of the Tides',
-    WM: 'Waycrest Manor'
+    ARAK: 'Ara-Kara',
+    COT: 'City of Threads',
+    GB: 'Grim Batol',
+    MISTS: 'Mists of Tirna Scithe',
+    SIEGE: 'Seige of Boralus',
+    DAWN: 'Dawnbreaker',
+    NW: 'Necrotic Wake',
+    SV: 'Stonevault',
 };
 const SPEC_SHORTNAME_MAP = {
     Affliction: 'Aff',
