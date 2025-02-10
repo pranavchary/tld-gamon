@@ -1,5 +1,4 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-// const { calculateDragonflightPreSquishData } = require('../df-presquish/commands');
 const { calculateTheWarWithinData } = require('../tww-current/commands');
 const { SAY_QUOTES, SHOUT_QUOTES } = require('../constants');
 
@@ -59,13 +58,11 @@ module.exports = {
             await interaction.reply({ content });
         } else {
             try {
-                // await calculateDragonflightPreSquishData(interaction);
                 await calculateTheWarWithinData(interaction);
             } catch (e) {
                 console.error(e);
                 await interaction.reply({
-                    // content: 'An error occurred while fetching your results. This could be an issue with Radier.io or with Discord itself. Please DM Pran or Tusk what you were trying to do when this happened, or try again in a few moments.',
-                    content: 'An error occurred while fetching your results. This could be an issue with Radier.io or with Discord itself. Please DM Pran (@Pranavius) what you were trying to do when this happened, or try again in a few moments.',
+                    content: 'An error occurred while fetching your results. This could be an issue with Radier.io or with Discord itself. Please DM Pran or Tusk what you were trying to do when this happened, or try again in a few moments.',
                     ephemeral: true
                 });
             }
