@@ -3,6 +3,7 @@ const { BOT_TOKEN } = process.env;
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
+// const { initializeCache } = require('./cache-service');
 
 // Initialize Discord Bot
 const bot = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -20,6 +21,9 @@ for (const file of commandFiles) {
 		console.warn(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
 	}
 }
+
+// Initialize data cache
+// initializeCache();
 
 // Execute when bot is ready to run
 bot.on('ready', () => {
@@ -43,7 +47,7 @@ bot.on(Events.InteractionCreate, async (interaction) => {
     const command = interaction.client.commands.get(interaction.commandName);
 
 	if (!command) {
-		console.error(`No command matching ${interaction.commandName} was found.`);
+		console.error(`[ERROR] No command matching ${interaction.commandName} was found.`);
 		return;
 	}
 

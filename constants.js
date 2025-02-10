@@ -1,23 +1,11 @@
 if (!process.env.NODE_ENV) require('dotenv').config();
+
 const { env: { GAMON_SHOUT_ID, STORM_BOLT_ID, GOREHOWL_ID } } = process;
-const BASE_SCORE_LEVEL = 7.5;
-const BASE_SCORE_COMPLETION = 37.5;
-const DUNGEON_SHORTNAME_MAP = {
-    ARAK: 'Ara-Kara',
-    COT: 'City of Threads',
-    GB: 'Grim Batol',
-    MISTS: 'Mists of Tirna Scithe',
-    SIEGE: 'Seige of Boralus',
-    DAWN: 'Dawnbreaker',
-    NW: 'Necrotic Wake',
-    SV: 'Stonevault',
-};
 const SPEC_SHORTNAME_MAP = {
     Affliction: 'Aff',
     Assassination: 'Sin',
-    'Beast Mastery': 'BM',
-    Brewmaster: 'BM',
     Augmentation: 'Aug',
+    'Beast Mastery': 'BM',
     Demonology: 'Demo',
     Destruction: 'Destro',
     Devastation: 'Dev',
@@ -25,13 +13,11 @@ const SPEC_SHORTNAME_MAP = {
     Elemental: 'Ele',
     Enhancement: 'Enhance',
     Marksmanship: 'MM',
-    Mistweaver: "MW",
     Preservation: 'Pres',
     Protection: 'Prot',
     Restoration: 'Resto',
     Retribution: 'Ret',
     Subtlety: 'Sub',
-    Windwalker: 'WW'
 };
 
 const SAY_QUOTES = [
@@ -49,9 +35,6 @@ const SHOUT_QUOTES = [
 ];
 
 module.exports = {
-    BASE_SCORE_LEVEL,
-    BASE_SCORE_COMPLETION,
-    DUNGEON_SHORTNAME_MAP,
     SPEC_SHORTNAME_MAP,
     SAY_QUOTES,
     SHOUT_QUOTES
