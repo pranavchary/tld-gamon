@@ -61,7 +61,7 @@ module.exports = {
             } catch (e) {
                 console.error(e);
                 await interaction.reply({
-                    content: 'An error occurred while fetching your results. This could be an issue with Radier.io or with Discord itself. Please DM Pran or Tusk what you were trying to do when this happened, or try again in a few moments.',
+                    content: 'An error occurred while fetching your results. This could be an issue with Raider.io or with Discord itself. Please DM Pran or Tusk what you were trying to do when this happened, or try again in a few moments.',
                     ephemeral: true
                 });
             }

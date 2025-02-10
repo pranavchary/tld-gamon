@@ -3,7 +3,7 @@ if (!process.env.NODE_ENV) require('dotenv').config();
 const { env: { GAMON_SHOUT_ID, STORM_BOLT_ID, GOREHOWL_ID } } = process;
 const SPEC_SHORTNAME_MAP = {
     Affliction: 'Aff',
-    Assassination: 'Sin',
+    Assassination: 'Ass',
     Augmentation: 'Aug',
     'Beast Mastery': 'BM',
     Demonology: 'Demo',
