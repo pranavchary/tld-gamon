@@ -22,9 +22,10 @@ const SPEC_SHORTNAME_MAP = {
 
 const SAY_QUOTES = [
     'Many times have I fallen at the hands of an orc and many times have I risen again.',
-    'For every orc that struck me, I will cleave a thousand of their skulls! This ends here!',
+    'For every orc that struck me, I will cleave a thousand of their skulls!',
     'For the Horde, my friend.',
-    'I may be bruised and beaten, but the hatred boils inside me.'
+    'I may be bruised and beaten, but the hatred boils inside me.',
+    'I need a new axe... My current one, it has cleaved too many skulls.'
 ];
 
 const SHOUT_QUOTES = [
