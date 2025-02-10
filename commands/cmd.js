@@ -45,8 +45,7 @@ module.exports = {
                 + '- `/gamon says` will treat you to a nice quote from everyone\'s favorite Tauren (just between the two of you)\n'
                 + '- `/gamon shouts` will inspire everyone in the channel with an epic shout from Gamon himself!\n\n'
                 + 'Required information for each command is taken via guided inputs to make it clear exactly what information is necessary. This reduces confusion around how to provide information properly.\n'
-                // + '*For any questions or issues with this bot, please DM Pran or Tusk*';
-                + '*For any questions or issues with this bot, please DM Pran (@Pranavius)*';
+                + '*For any questions or issues with this bot, please DM Pran or Tusk*';
             await interaction.reply({ content, ephemeral: true });
         } else if (subCommand === 'says') {
             const rand = Math.floor(Math.random() * SAY_QUOTES.length);
