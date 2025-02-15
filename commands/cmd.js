@@ -61,7 +61,7 @@ module.exports = {
         } else if (subCommand === 'butts') {
             const rand = Math.floor(Math.random() * BUTT_QUOTES.length);
             const content = BUTT_QUOTES[rand];
-            await interaction.reply({ content, ephemeral: true });
+            await interaction.reply({ content });
         } else if (subCommand === 'simulate' && interaction.options.getNumber('level') > MAX_KEY_LEVEL_AVAILABLE) {
             const rand = Math.floor(Math.random() * KEY_LEVEL_TOO_HIGH_QUOTES.length);
             const content = KEY_LEVEL_TOO_HIGH_QUOTES[rand];
