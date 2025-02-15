@@ -2,7 +2,7 @@ if (!process.env.NODE_ENV) require('dotenv').config();
 const { BOT_TOKEN } = process.env;
 const fs = require('node:fs');
 const path = require('node:path');
-const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, Events, GatewayIntentBits, MessageFlags } = require('discord.js');
 // const { initializeCache } = require('./cache-service');
 
 // Initialize Discord Bot
@@ -56,9 +56,9 @@ bot.on(Events.InteractionCreate, async (interaction) => {
 	} catch (error) {
 		console.error(error);
 		if (interaction.replied || interaction.deferred) {
-			await interaction.followUp({ content: 'I, Gamon, am confused as to what just happened...', ephemeral: true });
+			await interaction.followUp({ content: 'I, Gamon, am confused as to what just happened...', flags: MessageFlags.Ephemeral });
 		} else {
-			await interaction.reply({ content: 'I, Gamon, could not execute this command', ephemeral: true });
+			await interaction.reply({ content: 'I, Gamon, could not execute this command', flags: MessageFlags.Ephemeral });
 		}
 	}
 });

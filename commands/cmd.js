@@ -1,3 +1,4 @@
+const { MessageFlags } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { calculateTheWarWithinData } = require('../tww-current/commands');
 const { SAY_QUOTES, SHOUT_QUOTES, BUTT_QUOTES, KEY_LEVEL_TOO_HIGH_QUOTES } = require('../constants');
@@ -49,11 +50,11 @@ module.exports = {
                 + '- `/gamon butts` will... never mind, just try it for yourself and see\n\n'
                 + 'Required information for each command is taken via guided inputs to make it clear exactly what information is necessary.\n\n'
                 + '*For any questions or issues with this bot, please DM Pran or Tusk*';
-            await interaction.reply({ content, ephemeral: true });
+            await interaction.reply({ content, flags: MessageFlags.Ephemeral });
         } else if (subCommand === 'says') {
             const rand = Math.floor(Math.random() * SAY_QUOTES.length);
             const content = 'Gamon whispers: ' + SAY_QUOTES[rand];
-            await interaction.reply({ content, ephemeral: true });
+            await interaction.reply({ content, flags: MessageFlags.Ephemeral });
         } else if (subCommand === 'shouts') {
             const rand = Math.floor(Math.random() * SHOUT_QUOTES.length);
             const content = SHOUT_QUOTES[rand];
@@ -65,7 +66,7 @@ module.exports = {
         } else if (subCommand === 'simulate' && interaction.options.getNumber('level') > MAX_KEY_LEVEL_AVAILABLE) {
             const rand = Math.floor(Math.random() * KEY_LEVEL_TOO_HIGH_QUOTES.length);
             const content = KEY_LEVEL_TOO_HIGH_QUOTES[rand];
-            await interaction.reply({ content, ephemeral: true });
+            await interaction.reply({ content, flags: MessageFlags.Ephemeral });
         } else {
             try {
                 await calculateTheWarWithinData(interaction);
@@ -73,7 +74,7 @@ module.exports = {
                 console.error(e);
                 await interaction.reply({
                     content: 'An error occurred while fetching your results. This could be an issue with Raider.io or with Discord itself. Please DM Pran or Tusk what you were trying to do when this happened, or try again in a few moments.',
-                    ephemeral: true
+                    flags: MessageFlags.Ephemeral
                 });
             }
         }

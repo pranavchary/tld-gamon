@@ -1,3 +1,4 @@
+const { MessageFlags } = require('discord.js');
 const { EmbedBuilder } = require('@discordjs/builders');
 const { default: axios } = require('axios');
 const {
@@ -463,7 +464,7 @@ const postMythicPlusEmbedMessage = (calcData, rioData, interaction) => {
     const dungeonList = getSortedCleanedDungeons(calcData.dungeons, sortMethod);
 
     if (dungeonList.length === 0) {
-        return Promise.resolve(interaction.reply({ content: noDungeonsText, ephemeral: true }));
+        return Promise.resolve(interaction.reply({ content: noDungeonsText, flags: MessageFlags.Ephemeral }));
     }
 
     const embed = new EmbedBuilder()
@@ -505,7 +506,7 @@ const postMythicPlusEmbedMessage = (calcData, rioData, interaction) => {
 
     embed.addFields({ name: ' ', value: ' ' }, { name: ' ', value: closingLine });
 
-    return Promise.resolve(interaction.reply({ embeds: [embed], ephemeral: true }));
+    return Promise.resolve(interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral }));
 };
 
 const calculateDragonflightPreSquishData = async (interaction) => {
@@ -517,7 +518,7 @@ const calculateDragonflightPreSquishData = async (interaction) => {
     const response = await requestRaiderIoData(qp);
     if (response.response?.data?.error) {
         console.error(response.request);
-        await interaction.reply({ content: `Couldn't retrieve data for **${capitalizeText(qp.name)} - ${capitalizeText(qp.realm)}**. Please try again.`, ephemeral: true });
+        await interaction.reply({ content: `Couldn't retrieve data for **${capitalizeText(qp.name)} - ${capitalizeText(qp.realm)}**. Please try again.`, flags: MessageFlags.Ephemeral });
         return;
     }
     currentPrimaryAffix = await getCurrentWeekPrimaryAffix();
@@ -534,7 +535,7 @@ const calculateDragonflightPreSquishData = async (interaction) => {
             if (currentRating >= interaction.options.getNumber('rating')) {
                 await interaction.reply({
                     content: `Your current Mythic+ rating (${Math.floor(currentRating)}) is higher than/equal to your goal of ${interaction.options.getNumber('rating')}`,
-                    ephemeral: true
+                    flags: MessageFlags.Ephemeral
                 });
                 return;
             }

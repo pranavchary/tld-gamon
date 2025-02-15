@@ -1,3 +1,4 @@
+const { MessageFlags } = require('discord.js');
 const { EmbedBuilder } = require('@discordjs/builders');
 const { default: axios } = require('axios');
 const {
@@ -163,23 +164,28 @@ const getPushData = (rioData) => {
     let totalPotentialIncrease = 0;
     const dungeons = [];
 
+    const timerPercForOneUpgrade = getMinimumTimerPercentageForKeystoneUpgrade(1);
     for (let run of mythic_plus_best_runs) {
         const dungeon = {
             name: DUNGEON_SHORTNAME_MAP[run.short_name],
             shortName: run.short_name
         };
-        if (run.mythic_level === maxKeyLevelCompleted && run.num_keystone_upgrades === 0) {
+        // If no keys have been completed, all ratings should be calculated for completing a +2
+        if (currentRating === 0) {
+            dungeon.level = run.mythic_level;
+            dungeon.rating = getDungeonRating(dungeon.level, timerPercForOneUpgrade);
+        } else if (run.mythic_level === maxKeyLevelCompleted && run.num_keystone_upgrades === 0) {
             // If the best run was overtimed, this dungeon should be timed at the same keystone level to improve rating
             dungeon.level = run.mythic_level;
-            dungeon.rating = getDungeonRating(dungeon.level, getMinimumTimerPercentageForKeystoneUpgrade(1));
+            dungeon.rating = getDungeonRating(dungeon.level, timerPercForOneUpgrade);
         } else if (run.mythic_level < maxKeyLevelTimed) {
             // If the best run is not at least the same key level as the highest timed key, this dungeon should be completed at that key level
             dungeon.level = maxKeyLevelTimed;
-            dungeon.rating = getDungeonRating(dungeon.level, getMinimumTimerPercentageForKeystoneUpgrade(1));
+            dungeon.rating = getDungeonRating(dungeon.level, timerPercForOneUpgrade);
         } else {
             // In all other cases, increase the key level for this dungeon by the number of keystone upgrades from the best run
             dungeon.level = run.mythic_level + run.num_keystone_upgrades;
-            dungeon.rating = getDungeonRating(dungeon.level, getMinimumTimerPercentageForKeystoneUpgrade(1));
+            dungeon.rating = getDungeonRating(dungeon.level, timerPercForOneUpgrade);
         }
         dungeon.potentialIncrease = sanitizeNumber(dungeon.rating - run.score);
 
@@ -285,12 +291,12 @@ const postMythicPlusEmbedMessage = (calcData, rioData, interaction) => {
             closingLine = `Estimated Mythic+ rating after completing these dungeons: **${Math.floor(calcData.totalRating)}**`;
             break;
         default:
-            return Promise.resolve(interaction.reply({ content: 'I don\'t understand that command... Try again', ephemeral: true }));
+            return Promise.resolve(interaction.reply({ content: 'I don\'t understand that command... Try again', flags: MessageFlags.Ephemeral }));
     }
 
     const dungeonList = getSortedCleanedDungeons(calcData.dungeons, sortMethod);
     if (dungeonList.length === 0) {
-        return Promise.resolve(interaction.reply({ content: noDungeonsText, ephemeral: true }));
+        return Promise.resolve(interaction.reply({ content: noDungeonsText, flags: MessageFlags.Ephemeral }));
     }
 
     const embed = new EmbedBuilder()
@@ -316,7 +322,7 @@ const postMythicPlusEmbedMessage = (calcData, rioData, interaction) => {
     }
     embed.addFields({ name: ' ', value: closingLine });
 
-    return Promise.resolve(interaction.reply({ embeds: [embed], ephemeral: true }));
+    return Promise.resolve(interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral }));
 };
 
 const calculateTheWarWithinData = async (interaction) => {
@@ -328,7 +334,7 @@ const calculateTheWarWithinData = async (interaction) => {
     const response = await requestRaiderIoData(qp);
     if (response.response?.data?.error) {
         console.error(response.request);
-        await interaction.reply({ content: `Couldn't retrieve data for **${qp.name} - ${qp.realm}**. Please try again.`, ephemeral: true });
+        await interaction.reply({ content: `Couldn't retrieve data for **${qp.name} - ${qp.realm}**. Please try again.`, flags: MessageFlags.Ephemeral });
         return;
     }
 
@@ -348,7 +354,7 @@ const calculateTheWarWithinData = async (interaction) => {
             if (currentRating >= interaction.options.getNumber('rating')) {
                 await interaction.reply({
                     content: `${name}'s current Mythic+ rating (${Math.floor(currentRating)}) is higher than/equal to the goal of ${interaction.options.getNumber('rating')}`,
-                    ephemeral: true
+                    flags: MessageFlags.Ephemeral
                 });
                 return;
             }
