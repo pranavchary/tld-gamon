@@ -12,6 +12,8 @@ What Gamon can do for you:
 - Tell which dungeons a character could run and time to slightly improve their Mythic+ rating
 - Provide a plan for dungeons a character can complete to reach a goal Mythic+ rating
 
+Currently, Gamon can only calculate scores for Mythic+ dungeons up to +20 due to a lack of avilable information on higher level keystones. With some luck and more time for research and development, this shouldn't be the case for too long.
+
 *Last update: The War Within Season 1*
 
 ## The Last Dynasty Links

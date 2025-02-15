@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { calculateTheWarWithinData } = require('../tww-current/commands');
-const { SAY_QUOTES, SHOUT_QUOTES } = require('../constants');
+const { SAY_QUOTES, SHOUT_QUOTES, BUTT_QUOTES, KEY_LEVEL_TOO_HIGH_QUOTES } = require('../constants');
+const { MAX_KEY_LEVEL_AVAILABLE } = require('../tww-current/helpers');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -17,7 +18,7 @@ module.exports = {
     )
     .addSubcommand((subcommand) =>
         subcommand.setName('push')
-        .setDescription('Quickly find which affix and key level to complete a dungeon with to gain Mythic+ rating')
+        .setDescription('Find which dungeons you can complete with relative ease with to gain some Mythic+ rating')
         .addStringOption((option) => option.setName('character').setDescription('Character to fetch Mythic+ data for').setRequired(true).setMinLength(2).setMaxLength(12))
         .addStringOption((option) => option.setName('realm').setDescription('Realm a character is on *(if one is not provided, this bot will search for characters on Thrall)*'))
         .addBooleanOption((option) => option.setName('alphabetical').setDescription('Whether to sort dungeons alphabetically or not'))
@@ -34,17 +35,19 @@ module.exports = {
         ))
     )
     .addSubcommand((subcommand) => subcommand.setName('says').setDescription('The Hero of Orgrimmar will whisper sweet nothings into your ear'))
-    .addSubcommand((subcommand) => subcommand.setName('shouts').setDescription('Inspire the entire channel with a rallying cry! But we all know which quote you\'re looking for...')),
+    .addSubcommand((subcommand) => subcommand.setName('shouts').setDescription('Inspire the entire channel with a rallying cry! But we all know which quote you\'re looking for...'))
+    .addSubcommand((subcommand) => subcommand.setName('butts').setDescription('Do it... I dare you...')),
     async execute(interaction) {
         const subCommand = interaction.options.getSubcommand();
         if (subCommand === 'help') {
-            const content = '**Gamon** can provide information about completing Mythic+ dungeons at certain keystone levels and how that might impact a character\'s Mythic+ rating.\n\n'
+            const content = '### *I, Gamon, will save us!*\n\nGamon can provide information about completing Mythic+ dungeons at specific keystone levels (up to level 20) and how that might impact a character\'s Mythic+ rating.\n\n'
                 + '- `/gamon simulate` will simulate a character running all Mythic+ dungeons at a single keystone level\n'
                 + '- `/gamon push` will tell which dungeons a character could run to slightly improve their Mythic+ rating\n'
                 + '- `/gamon goal` will provide a plan for dungeons a character can complete to reach a goal Mythic+ rating\n'
                 + '- `/gamon says` will treat you to a nice quote from everyone\'s favorite Tauren (just between the two of you)\n'
-                + '- `/gamon shouts` will inspire everyone in the channel with an epic shout from Gamon himself!\n\n'
-                + 'Required information for each command is taken via guided inputs to make it clear exactly what information is necessary. This reduces confusion around how to provide information properly.\n'
+                + '- `/gamon shouts` will inspire everyone in the channel with an epic shout from Gamon himself!\n'
+                + '- `/gamon butts` will... never mind, just try it for yourself and see\n\n'
+                + 'Required information for each command is taken via guided inputs to make it clear exactly what information is necessary.\n\n'
                 + '*For any questions or issues with this bot, please DM Pran or Tusk*';
             await interaction.reply({ content, ephemeral: true });
         } else if (subCommand === 'says') {
@@ -55,6 +58,14 @@ module.exports = {
             const rand = Math.floor(Math.random() * SHOUT_QUOTES.length);
             const content = SHOUT_QUOTES[rand];
             await interaction.reply({ content });
+        } else if (subCommand === 'butts') {
+            const rand = Math.floor(Math.random() * BUTT_QUOTES.length);
+            const content = BUTT_QUOTES[rand];
+            await interaction.reply({ content, ephemeral: true });
+        } else if (subCommand === 'simulate' && interaction.options.getNumber('level') > MAX_KEY_LEVEL_AVAILABLE) {
+            const rand = Math.floor(Math.random() * KEY_LEVEL_TOO_HIGH_QUOTES.length);
+            const content = KEY_LEVEL_TOO_HIGH_QUOTES[rand];
+            await interaction.reply({ content, ephemeral: true });
         } else {
             try {
                 await calculateTheWarWithinData(interaction);

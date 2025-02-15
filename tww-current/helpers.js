@@ -42,6 +42,8 @@ const KEYLEVEL_BASESCORE_MAP = {
     20: 485
 };
 
+const MAX_KEY_LEVEL_AVAILABLE = Object.keys(KEYLEVEL_BASESCORE_MAP)[Object.keys(KEYLEVEL_BASESCORE_MAP).length - 1];
+
 /**
  * @param {string} text The text to capitalize
  * @returns A version of the provided text with the first letter capitalized and the remaining letters in lowercase
@@ -66,8 +68,10 @@ const sanitizeNumber = (num) => +(num.toFixed(1));
  */
 const getDungeonRating = (keyLevel, timerPercentage) => {
     if (timerPercentage <= -0.4) return 0;
+    // This capped key level variable is necessary to avoid trying to get baseScore when it's not defined for higher keys
+    const cappedKeyLevel = keyLevel <= MAX_KEY_LEVEL_AVAILABLE ? keyLevel : MAX_KEY_LEVEL_AVAILABLE;
 
-    const baseScore = KEYLEVEL_BASESCORE_MAP[keyLevel];
+    const baseScore = KEYLEVEL_BASESCORE_MAP[cappedKeyLevel];
     let overtimePenalty = 0;
     if (timerPercentage < 0 && keyLevel > 11) {
         overtimePenalty = 15 * (keyLevel - 8);
@@ -84,6 +88,7 @@ const getDungeonRating = (keyLevel, timerPercentage) => {
 module.exports = {
     DUNGEON_SHORTNAME_MAP,
     DUNGEON_SHORTNAME_SLUG_MAP,
+    MAX_KEY_LEVEL_AVAILABLE,
     capitalizeText,
     sanitizeNumber,
     getDungeonRating
