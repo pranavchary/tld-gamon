@@ -1,4 +1,15 @@
-const { BASE_SCORE_LEVEL, BASE_SCORE_COMPLETION } = require('./constants');
+const DUNGEON_SHORTNAME_MAP = {
+    AD: 'Atal\'Dazar',
+    BRH: 'Black Rook Hold',
+    DHT: 'Darkheart Thicket',
+    EB: 'Everbloom',
+    FALL: 'Galakrond\'s Fall',
+    RISE: 'Murozond\'s Rise',
+    TOTT: 'Throne of the Tides',
+    WM: 'Waycrest Manor',
+};
+const BASE_SCORE_LEVEL = 7.5;
+const BASE_SCORE_COMPLETION = 37.5;
 
 /**
  * @param {string} text The text to capitalize
@@ -85,8 +96,9 @@ const getTargetKeystoneLevel = (highestRunDungeon, currentDungeon) => {
 };
 
 module.exports = {
+    DUNGEON_SHORTNAME_MAP,
     capitalizeText,
     sanitizeNumber,
     getDungeonRating,
-    getTargetKeystoneLevel
+    getTargetKeystoneLevel,
 };
