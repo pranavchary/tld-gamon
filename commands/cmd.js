@@ -8,36 +8,70 @@ module.exports = {
     data: new SlashCommandBuilder()
     .setName('gamon')
     .setDescription('Find the dungeons you need to improve your mythic rating!')
-    .addSubcommand((subcommand) => subcommand.setName('help').setDescription('Learn what Gamon can do for you'))
-    .addSubcommand((subcommand) =>
-        subcommand.setName('simulate')
+    .addSubcommand((subcommand) => subcommand.setName('help')
+        .setDescription('Learn what Gamon can do for you'))
+    .addSubcommand((subcommand) => subcommand.setName('simulate')
         .setDescription('Simulate running all keys at a given keystone level')
-        .addStringOption((option) => option.setName('character').setDescription('Character to fetch Mythic+ data for').setRequired(true).setMinLength(2).setMaxLength(12))
-        .addNumberOption((option) => option.setName('level').setDescription('Keystone level to simulate running all dungeons at').setRequired(true).setMinValue(2))
-        .addStringOption((option) => option.setName('realm').setDescription('Realm a character is on *(if one is not provided, this bot will search for characters on Thrall)*'))
-        .addBooleanOption((option) => option.setName('alphabetical').setDescription('Whether to sort dungeons alphabetically or not'))
+        .addStringOption((option) => option.setName('character')
+            .setDescription('Character to fetch Mythic+ data for')
+            .setRequired(true)
+            .setMinLength(2)
+            .setMaxLength(12))
+        .addNumberOption((option) => option.setName('level')
+            .setDescription('Keystone level to simulate running all dungeons at')
+            .setRequired(true)
+            .setMinValue(2))
+        .addStringOption((option) => option.setName('realm')
+            .setDescription('Realm a character is on *(if one is not provided, this bot will search for characters on Thrall)*'))
+        .addBooleanOption((option) => option
+            .setName('alphabetical').setDescription('Whether to sort dungeons alphabetically or not'))
     )
-    .addSubcommand((subcommand) =>
-        subcommand.setName('push')
+    .addSubcommand((subcommand) => subcommand.setName('push')
         .setDescription('Find which dungeons you can complete with relative ease with to gain some Mythic+ rating')
-        .addStringOption((option) => option.setName('character').setDescription('Character to fetch Mythic+ data for').setRequired(true).setMinLength(2).setMaxLength(12))
-        .addStringOption((option) => option.setName('realm').setDescription('Realm a character is on *(if one is not provided, this bot will search for characters on Thrall)*'))
-        .addBooleanOption((option) => option.setName('alphabetical').setDescription('Whether to sort dungeons alphabetically or not'))
+        .addStringOption((option) => option.setName('character')
+            .setDescription('Character to fetch Mythic+ data for')
+            .setRequired(true)
+            .setMinLength(2)
+            .setMaxLength(12))
+        .addStringOption((option) => option.setName('realm')
+            .setDescription('Realm a character is on *(if one is not provided, this bot will search for characters on Thrall)*'))
+        .addBooleanOption((option) => option.setName('alphabetical')
+            .setDescription('Whether to sort dungeons alphabetically or not'))
     )
-    .addSubcommand((subcommand) =>
-        subcommand.setName('goal')
+    .addSubcommand((subcommand) => subcommand.setName('goal')
         .setDescription('Learn how you could reach a goal rating (assumes all runs increase key level by 1)')
-        .addStringOption((option) => option.setName('character').setDescription('Character to fetch Mythic+ data for').setRequired(true).setMinLength(2).setMaxLength(12))
-        .addNumberOption((option) => option.setName('rating').setDescription('The Mythic+ rating you would like to reach').setRequired(true).setMinValue(1))
-        .addStringOption((option) => option.setName('realm').setDescription('Realm a character is on *(if one is not provided, this bot will search for characters on Thrall)*'))
-        .addStringOption((option) => option.setName('sort').setDescription('How you want to sort the list of dungeons').addChoices(
-            { name: 'alphabetical', value: 'alphabetical' },
-            { name: 'level', value: 'level' },
-        ))
+        .addStringOption((option) => option.setName('character')
+            .setDescription('Character to fetch Mythic+ data for')
+            .setRequired(true)
+            .setMinLength(2)
+            .setMaxLength(12))
+        .addNumberOption((option) => option.setName('rating')
+            .setDescription('The Mythic+ rating you would like to reach')
+            .setRequired(true)
+            .setMinValue(1))
+        .addStringOption((option) => option.setName('realm')
+            .setDescription('Realm a character is on *(if one is not provided, this bot will search for characters on Thrall)*'))
+        .addStringOption((option) => option.setName('sort')
+            .setDescription('How you want to sort the list of dungeons').addChoices(
+                { name: 'alphabetical', value: 'alphabetical' },
+                { name: 'level', value: 'level' },
+            ))
     )
-    .addSubcommand((subcommand) => subcommand.setName('says').setDescription('The Hero of Orgrimmar will whisper sweet nothings into your ear'))
-    .addSubcommand((subcommand) => subcommand.setName('shouts').setDescription('Inspire the entire channel with a rallying cry! But we all know which quote you\'re looking for...'))
-    .addSubcommand((subcommand) => subcommand.setName('butts').setDescription('Do it... I dare you...')),
+    .addSubcommand((subcommand) => subcommand.setName('ach')
+        .setDescription('Check your character\'s progression towards this season\'s Mythic+ achievements')
+        .addStringOption((option) => option.setName('character')
+            .setDescription('Character to fetch Mythic+ data for')
+            .setRequired(true)
+            .setMinLength(2)
+            .setMaxLength(12))
+        .addStringOption((option) => option.setName('realm')
+            .setDescription('Realm a character is on *(if one is not provided, this bot will search for characters on Thrall)*')))
+    .addSubcommand((subcommand) => subcommand.setName('says')
+        .setDescription('The Hero of Orgrimmar will whisper sweet nothings into your ear'))
+    .addSubcommand((subcommand) => subcommand.setName('shouts')
+        .setDescription('Inspire the entire channel with a rallying cry! But we all know which quote you\'re looking for...'))
+    .addSubcommand((subcommand) => subcommand.setName('butts')
+        .setDescription('Do it... I dare you...')),
     async execute(interaction) {
         const subCommand = interaction.options.getSubcommand();
         if (subCommand === 'help') {
@@ -45,6 +79,7 @@ module.exports = {
                 + '- `/gamon simulate` will simulate a character running all Mythic+ dungeons at a single keystone level\n'
                 + '- `/gamon push` will tell which dungeons a character could run to slightly improve their Mythic+ rating\n'
                 + '- `/gamon goal` will provide a plan for dungeons a character can complete to reach a goal Mythic+ rating\n'
+                + '- `/gamon ach` will show progress towards the current season\'s Mythic+ achievements\n'
                 + '- `/gamon says` will treat you to a nice quote from everyone\'s favorite Tauren (just between the two of you)\n'
                 + '- `/gamon shouts` will inspire everyone in the channel with an epic shout from Gamon himself!\n'
                 + '- `/gamon butts` will... never mind, just try it for yourself and see\n\n'

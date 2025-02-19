@@ -5,7 +5,12 @@ const {
     DUNGEON_SHORTNAME_MAP,
     // DUNGEON_SHORTNAME_SLUG_MAP,
     sanitizeNumber,
-    getDungeonRating
+    getDungeonRating,
+    isKeystoneExplorer,
+    isKeystoneConquerer,
+    isKeystoneMaster,
+    isKeystoneHero,
+    isDungeonKeystoneHero
 } = require('./helpers');
 const { SPEC_SHORTNAME_MAP } = require('../constants');
 // const { setCache, getCache } = require('../cache-service');
@@ -245,6 +250,47 @@ const getGoalData = (pushData, rioData, goal) => {
     };
 };
 
+const postMythicPlusAchievementsMessage = (rioData, interaction) => {
+    const {
+        name,
+        class: playerClass,
+        active_spec_name: spec,
+        realm,
+        profile_url,
+        thumbnail_url,
+        mythic_plus_scores_by_season: [{ scores: { all: currentRating } }],
+        mythic_plus_best_runs,
+        gear: { item_level_equipped: ilvl }
+    } = rioData;
+
+    const embed = new EmbedBuilder()
+    .setAuthor({ name: `${name} - ${realm}`, url: profile_url })
+    .setDescription(`*${ilvl} ${SPEC_SHORTNAME_MAP[spec] || spec} ${playerClass}*\n\n${name}\'s progress towards Mythic+ achievements this season:`)
+    .setThumbnail(thumbnail_url)
+    .addFields(
+        { name: 'Current Mythic+ Rating', value: Math.floor(currentRating).toString(), inline: true },
+        { name: ' ', value: ' ' }
+    )
+    .setFooter({ iconURL: 'https://cdn.raiderio.net/images/brand/Icon_2ColorWhite.png', text: 'Click your character\'s name to view its Raider.io profile' });
+    
+        embed.addFields(
+            { name: 'Rating Achievements', value: ' ' },
+            { name: ' ', value: `${isKeystoneExplorer(currentRating) ? ':white_check_mark:' : ':x:'} Keystone Explorer` },
+            { name: ' ', value: `${isKeystoneConquerer(currentRating) ? ':white_check_mark:' : ':x:'} Keystone Conquerer` },
+            { name: ' ', value: `${isKeystoneMaster(currentRating) ? ':white_check_mark:' : ':x:'} Keystone Master` },
+            { name: ' ', value: `${isKeystoneHero(currentRating) ? ':white_check_mark:' : ':x:'} Keystone Master` },
+            { name: ' ', value: `${isKeystoneLegend(currentRating) ? ':white_check_mark:' : ':x:'} Keystone Legend` },
+            { name: ' ', value: ' ' },
+            { name: 'Dungeon Achievements', value: ' ' }
+        );
+    
+        for (let run of mythic_plus_best_runs) {
+            console.log(run);
+        }
+
+        return Promise.resolve(interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral }));
+}
+
 /**
  * Dynamically creates and posts a Discord embed message in response to a user executing one of the `/gamon` subcommands provided there is data to be shown
  * @param {*} calcData Calculated data for the given subcommand that should be presented to the user
@@ -339,7 +385,9 @@ const calculateTheWarWithinData = async (interaction) => {
     }
 
     const { data } = response;
-    if (subCommand === 'simulate') {
+    if (subCommand === 'ach') {
+        await postMythicPlusAchievementsMessage(data, interaction);
+    } else if (subCommand === 'simulate') {
         const simmedData = simulateLevel(data, interaction.options.getNumber('level'));
         await postMythicPlusEmbedMessage(simmedData, data, interaction);
     } else {

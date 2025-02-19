@@ -84,6 +84,41 @@ const getDungeonRating = (keyLevel, timerPercentage) => {
     return sanitizeNumber(baseScore + (37.5 * timerPercentage) - overtimePenalty);
 };
 
+/**
+ * Indicates if a character has acheived Keystone Explorer or not
+ * @param {number} currentRating Character's current Mythic+ rating
+ * @returns `true` if the character has completed the Keystone Explorer achievement, `false` otherwise
+ */
+const isKeystoneExplorer = (currentRating) => currentRating > 0;
+
+/**
+ * Indicates if a character has acheived Keystone Conquerer or not
+ * @param {number} currentRating Character's current Mythic+ rating
+ * @returns `true` if the character has completed the Keystone Conquerer achievement, `false` otherwise
+ */
+const isKeystoneConquerer = (currentRating) => currentRating >= 1500;
+
+/**
+ * Indicates if a character has acheived Keystone Master or not
+ * @param {number} currentRating Character's current Mythic+ rating
+ * @returns `true` if the character has completed the Keystone Master achievement, `false` otherwise
+ */
+const isKeystoneMaster = (currentRating) => currentRating >= 2000;
+
+/**
+ * Indicates if a character has acheived Keystone Hero or not
+ * @param {number} currentRating Character's current Mythic+ rating
+ * @returns `true` if the character has completed the Keystone Hero achievement, `false` otherwise
+ */
+const isKeystoneHero = (currentRating) => currentRating >= 2500;
+
+/**
+ * Indicates if a character has achieved Keystone Hero for a dungeon or not
+ * @param {number} keyLevel The keystone level for the best run of a dungeon
+ * @param {number} numKeystoneUpgrades How many levels the keystone was upgraded by in the run
+ * @returns `true` if Keystone Hero has been achieved for the dungeon, `false` otherwise
+ */
+const isDungeonKeystoneHero = (keyLevel, numKeystoneUpgrades) => keyLevel >= 10 && numKeystoneUpgrades >= 1;
 
 module.exports = {
     DUNGEON_SHORTNAME_MAP,
@@ -91,5 +126,10 @@ module.exports = {
     MAX_KEY_LEVEL_AVAILABLE,
     capitalizeText,
     sanitizeNumber,
-    getDungeonRating
+    getDungeonRating,
+    isKeystoneExplorer,
+    isKeystoneConquerer,
+    isKeystoneMaster,
+    isKeystoneHero,
+    isDungeonKeystoneHero
 };
