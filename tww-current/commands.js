@@ -264,14 +264,14 @@ const postMythicPlusEmbedMessage = (calcData, rioData, interaction) => {
         mythic_plus_scores_by_season: [{ scores: { all: currentRating } }],
         gear: { item_level_equipped: ilvl }
     } = rioData;
-    const subCommand = interaction.options.getSubcommand();
+    const subcommand = interaction.options.getSubcommand();
 
     let noDungeonsText = '';
     let description = `*${ilvl} ${SPEC_SHORTNAME_MAP[spec] || spec} ${playerClass}*\n\n`;
     let sortMethod;
     let closingLine = '';
 
-    switch (subCommand) {
+    switch (subcommand) {
         case 'simulate':
             noDungeonsText = `${name} won't get any rating increase from keys at **Mythic level ${interaction.options.getNumber('level')}**. Try simulating a higher key level.`;
             description += `Here's how your Mythic+ rating could increase by completing the following keys at **Mythic level ${interaction.options.getNumber('level')}** within the time limit:`;
@@ -326,7 +326,7 @@ const postMythicPlusEmbedMessage = (calcData, rioData, interaction) => {
 };
 
 const calculateTheWarWithinData = async (interaction) => {
-    const subCommand = interaction.options.getSubcommand();
+    const subcommand = interaction.options.getSubcommand();
     const qp = { realm: interaction.options.getString('realm'), name: interaction.options.getString('character') };
     if (!qp.realm) qp.realm = 'thrall';
     // Remove apostrophes and replace spaces with '-' in realm names
@@ -339,14 +339,14 @@ const calculateTheWarWithinData = async (interaction) => {
     }
 
     const { data } = response;
-    if (subCommand === 'simulate') {
+    if (subcommand === 'simulate') {
         const simmedData = simulateLevel(data, interaction.options.getNumber('level'));
         await postMythicPlusEmbedMessage(simmedData, data, interaction);
     } else {
         const pushData = getPushData(data);
-        if (subCommand === 'push') {
+        if (subcommand === 'push') {
             await postMythicPlusEmbedMessage(pushData, data, interaction);
-        } else if (subCommand === 'goal') {
+        } else if (subcommand === 'goal') {
             const {
                 name,
                 mythic_plus_scores_by_season: [{ scores : { all: currentRating } }]
