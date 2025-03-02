@@ -7,11 +7,10 @@ const { MAX_KEY_LEVEL_AVAILABLE } = require('../tww-current/helpers');
 module.exports = {
     data: new SlashCommandBuilder()
     .setName('gamon')
+    .setDescription('New gamon desc test')
     .addSubcommand((sc) => sc.setName('help').setDescription('Learn what Gamon can do for you'))
     .addSubcommand((sc) => sc.setName('craft')
-        .setDescription('Lets our master craftsman Tyrianth know that you\'ve placed a crafting order for him to fill')
-        .addStringOption((opt) => opt.setName('character').setDescription('Character you are placing the crafting order from').setRequired(true).setMinLength(2).setMaxLength(12))
-        .addStringOption((opt) => opt.setName('realm').setDescription('Realm a character is on *(if one is not provided, defaults to Thrall)*'))
+        .setDescription('Get help with crafting items and lets our master craftsman (Tyrianth) know when you\'ve placed an order for him')
     )
     .addSubcommand((sc) =>
         sc.setName('simulate')
@@ -73,7 +72,7 @@ module.exports = {
             const rand = Math.floor(Math.random() * KEY_LEVEL_TOO_HIGH_QUOTES.length);
             const content = KEY_LEVEL_TOO_HIGH_QUOTES[rand];
             await interaction.reply({ content, flags: MessageFlags.Ephemeral });
-        } else {
+        } else if (subcommand !== 'craft') {
             try {
                 await calculateTheWarWithinData(interaction);
             } catch (e) {
