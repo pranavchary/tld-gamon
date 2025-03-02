@@ -7,10 +7,11 @@ const { MAX_KEY_LEVEL_AVAILABLE } = require('../tww-current/helpers');
 module.exports = {
     data: new SlashCommandBuilder()
     .setName('gamon')
+    // TODO: Update this or remove it.
     .setDescription('New gamon desc test')
     .addSubcommand((sc) => sc.setName('help').setDescription('Learn what Gamon can do for you'))
     .addSubcommand((sc) => sc.setName('craft')
-        .setDescription('Get help with crafting items and lets our master craftsman (Tyrianth) know when you\'ve placed an order for him')
+        .setDescription('Quickly find characters to fill your crafting orders')
     )
     .addSubcommand((sc) =>
         sc.setName('simulate')
