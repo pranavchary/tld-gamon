@@ -446,7 +446,7 @@ const CRAFTING_MAP = {
             [CRAFTERS.Evalynn]: ['Weathered Stormfront Vest', 'Rune-Branded Hood', 'Rune-Branded Mantle', 'Rune-Branded Tunic'],
             [CRAFTERS.Varus]: ['Sanctified Torchbearer\'s Grips', 'Glyph-Etched Gauntlets'],
             [CRAFTERS.Swain]: ['Waders of the Unifying Flame', 'Rune-Branded Kickers', 'Rune-Branded Legwraps'],
-            [CRAFTERS.Akali]: ['Adrenal Surge Clasp'/*, 'Rolling Thunderstrike Talons'*/, 'Rune-Branded Grasps', 'Rune-Branded Waistband'],
+            [CRAFTERS.Akali]: ['Adrenal Surge Clasp', 'Roiling Thunderstrike Talons', 'Rune-Branded Grasps', 'Rune-Branded Waistband'],
             [CRAFTERS.Artamis]: [/*'Vambraces of Deepening Flame', */'Glyph-Etched Vambraces'],
             [CRAFTERS.Kindred]: ['Busy Bee\'s Buckle', 'Glyph-Etched Binding'],
             [CRAFTERS.Heimerdinger]: ['Reinforced Setae Flyers', 'Glyph-Etched Cuisses', 'Glyph-Etched Stompers'],

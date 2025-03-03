@@ -1,5 +1,5 @@
 if (!process.env.NODE_ENV) require('dotenv').config();
-const { BOT_TOKEN, QUEST_IMPORTANT_ID } = process.env;
+const { BOT_TOKEN, QUEST_IMPORTANT_ID, CRAFTING_DM_USER_ID, TLD_GUILD_ID } = process.env;
 const fs = require('node:fs');
 const path = require('node:path');
 const {
@@ -42,15 +42,26 @@ for (const file of commandFiles) {
 // initializeCache();
 
 const craftSelectionMap = new Map();
-const craftingInstructions = `
-### <:quest_important:${QUEST_IMPORTANT_ID}> This bot DOES NOT submit a crafting order automatically for you in WoW.
-### <:quest_important:${QUEST_IMPORTANT_ID}> Crafting orders created in Discord WILL NOT be fulfilled if they have not been submitted in WoW.
+const getCraftingInstructions = (isTLDServer, appendedText) => {
+	let craftingInstructions = `
+	### :warning: This bot DOES NOT submit a crafting order automatically for you in WoW.
+	### :warning: Crafting orders confirmed in Discord WILL NOT be fulfilled if you have not submitted it in WoW.	
+	`;
 
-### __How to Use__
-1. Fill out the dropdown fields until you find the item you want crafted.
-2. Copy your crafter's name from Discord and use it to place your crafting order in-game.
-3. Click the **Confirm** button to notify Tyrianth that you've submitted a crafting order for him.
-`;
+	if (isTLDServer) {
+		craftingInstructions = craftingInstructions.replace(/(:warning:)/gi, `<:quest_important:${QUEST_IMPORTANT_ID}>`);
+	}
+
+	craftingInstructions += `
+
+	### __How to Use__
+	1. Fill out the dropdown fields until you find the item you want crafted.
+	2. Copy your crafter's name from Discord and use it to place your crafting order in-game.
+	3. Click the **Confirm** button to notify Tyrianth that you've submitted a crafting order for him.
+	`;
+
+	return appendedText ? craftingInstructions + appendedText : craftingInstructions;
+};
 
 // Execute when bot is ready to run
 bot.on('ready', () => {
@@ -87,7 +98,7 @@ bot.on(Events.InteractionCreate, async (interaction) => {
 			.addOptions(CATEGORY_OPTIONS);
 		const categoryRow = new ActionRowBuilder().addComponents(categories);
 
-		await interaction.reply({ content: craftingInstructions, components: [categoryRow], flags: MessageFlags.Ephemeral });
+		await interaction.reply({ content: getCraftingInstructions(interaction.guildId === TLD_GUILD_ID), components: [categoryRow], flags: MessageFlags.Ephemeral });
 	} else {
 		try {
 			await command.execute(interaction);
@@ -123,7 +134,7 @@ bot.on(Events.InteractionCreate, async (interaction) => {
 			.addOptions(PROFESSION_OPTIONS.filter((prof) => availableProfs.includes(prof.value)));
 		const professionRow = new ActionRowBuilder().addComponents(professions);
 		
-		await interaction.update({ content: craftingInstructions, components: [categoryRow, professionRow] });
+		await interaction.update({ content: getCraftingInstructions(interaction.guildId === TLD_GUILD_ID), components: [categoryRow, professionRow] });
 	}
 });
 
@@ -150,7 +161,7 @@ bot.on(Events.InteractionCreate, async (interaction) => {
 		.addOptions(Object.values(CRAFTING_MAP[profession][category]).flatMap((item) => item).map((item) => ({ label: item, value: item })));
 	const craftsRow = new ActionRowBuilder().addComponents(crafts);
 
-	await interaction.update({ content: craftingInstructions, components: [categoryRow, professionRow, craftsRow] });
+	await interaction.update({ content: getCraftingInstructions(interaction.guildId === TLD_GUILD_ID), components: [categoryRow, professionRow, craftsRow] });
 });
 
 // Crafting Interaction: Confirm with DM
@@ -160,7 +171,21 @@ bot.on(Events.InteractionCreate, async (interaction) => {
 	const category = craftSelectionMap.get(interaction.user.id).category;
 	const profession = craftSelectionMap.get(interaction.user.id).profession;
 	const item = interaction.values[0];
-	craftSelectionMap.set(interaction.user.id, { category, profession, item });
+	let crafter;
+	for (let toon in CRAFTING_MAP[profession][category]) {
+		if (CRAFTING_MAP[profession][category][toon].includes(item)) {
+			crafter = toon;
+			break;
+		}
+	}
+
+	if (!crafter) {
+		craftSelectionMap.delete(interaction.user.id);
+		await interaction.reply({ content: 'Gamon was not able to find you a suitable crafter... My humblest apologies.', flags: MessageFlags.Ephemeral });
+		return;
+	}
+
+	craftSelectionMap.set(interaction.user.id, { category, profession, item, crafter });
 	
 	const categoryRow = new ActionRowBuilder().addComponents(StringSelectMenuBuilder
 		.from(interaction.message.components[0].components[0])
@@ -174,14 +199,6 @@ bot.on(Events.InteractionCreate, async (interaction) => {
 		.from(interaction.message.components[2].components[0])
 		.setOptions(interaction.message.components[2].components[0].options.map((opt) => ({ ...opt, default: opt.value === item })))
 	);
-
-	let crafter;
-	for (let toon in CRAFTING_MAP[profession][category]) {
-		if (CRAFTING_MAP[profession][category][toon].includes(item)) {
-			crafter = toon;
-			break;
-		}
-	}
 
 	const craftingInstructionsAddon = `\n:clipboard: **Your Crafter:** *${crafter}*`;
 
@@ -198,7 +215,32 @@ bot.on(Events.InteractionCreate, async (interaction) => {
 	
 	const confirmRow = new ActionRowBuilder().addComponents(infoButton, confirmButton);
 
-	await interaction.update({ content: craftingInstructions + craftingInstructionsAddon, components: [categoryRow, professionRow, craftsRow, confirmRow] });
+	await interaction.update({ content: getCraftingInstructions(interaction.guildId === TLD_GUILD_ID, craftingInstructionsAddon), components: [categoryRow, professionRow, craftsRow, confirmRow] });
+});
+
+bot.on(Events.InteractionCreate, async (interaction) => {
+	if (!interaction.isButton() || interaction.customId !== 'craft-confirm') return;
+	const {
+		item,
+		crafter
+	} = craftSelectionMap.get(interaction.user.id);
+	
+	try {
+		const userToMessage = await bot.users.fetch(CRAFTING_DM_USER_ID);
+		const message = `
+		### :bell: New Crafting Request
+		**Requested By:** <@${interaction.user.id}>
+		**Item:** ${item}
+		--------------
+		Log in to **${crafter}** to fulfil this request.
+		`;
+		await userToMessage.send(message);
+
+		const completionMessage = `:white_check_mark: Gamon has relayed your request for **${item}** to Tyrianth. Await your item's arrival patiently, friend.`;
+		await interaction.update({ content: completionMessage, components: [] });
+	} catch (error) {
+		console.error(error);
+	}
 });
 
 bot.login(BOT_TOKEN);
