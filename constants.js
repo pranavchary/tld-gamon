@@ -36,10 +36,17 @@ const BUTT_QUOTES = [
 ];
 
 const SHOUT_QUOTES = [
-    'THIS ENDS HERE!',
-    `<:gamon_shout:${GAMON_SHOUT_ID}> I, GAMON, WILL SAVE US!`,
-    `<:gorehowl:${GOREHOWL_ID}> TASTE MY AXE!`,
-    `<:storm_bolt:${STORM_BOLT_ID}> I AM A STORM OF PAIN!`,
+    '### :mega: THIS ENDS HERE!',
+    `### :mega: I, GAMON, WILL SAVE US!`,
+    `### :axe: TASTE MY AXE!`,
+    `### :cloud_lightning: I AM A STORM OF PAIN!`,
+];
+
+const SHOUT_QUOTES_TLD = [
+    '### :mega: THIS ENDS HERE!',
+    `### <:gamon_shout:${GAMON_SHOUT_ID}> I, GAMON, WILL SAVE US!`,
+    `### <:gorehowl:${GOREHOWL_ID}> TASTE MY AXE!`,
+    `### <:storm_bolt:${STORM_BOLT_ID}> I AM A STORM OF PAIN!`,
 ];
 
 const KEY_LEVEL_TOO_HIGH_QUOTES = [
@@ -56,5 +63,6 @@ module.exports = {
     SAY_QUOTES,
     BUTT_QUOTES,
     SHOUT_QUOTES,
+    SHOUT_QUOTES_TLD,
     KEY_LEVEL_TOO_HIGH_QUOTES
 };
