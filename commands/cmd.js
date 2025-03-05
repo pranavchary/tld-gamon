@@ -9,10 +9,9 @@ const { MAX_KEY_LEVEL_AVAILABLE } = require('../tww-current/helpers');
 module.exports = {
     data: new SlashCommandBuilder()
     .setName('gamon')
+    .setDescription('Find the dungeons you need to improve your mythic rating!')
     .addSubcommand((sc) => sc.setName('help').setDescription('Learn what Gamon can do for you'))
-    .addSubcommand((sc) => sc.setName('craft')
-        .setDescription('Quickly find one of Tyrianth\'s characters to fill your crafting orders')
-    )
+    .addSubcommand((sc) => sc.setName('craft').setDescription('Quickly find one of Tyrianth\'s characters to fill your crafting orders'))
     .addSubcommand((sc) =>
         sc.setName('simulate')
         .setDescription('Simulate running all keys at a given keystone level')
