@@ -47,7 +47,7 @@ module.exports = {
         const subcommand = interaction.options.getSubcommand();
         if (subcommand === 'help') {
             const content = '### *I, Gamon, will save us!*\n\nGamon can provide information about completing Mythic+ dungeons at specific keystone levels (up to level 20) and how that might impact a character\'s Mythic+ rating.\n'
-                + '- :new: `/gamon craft` will help you find which of Tyrianth\'s characters to place crafting orders with\n'
+                + '- `/gamon craft` will help you find which of Tyrianth\'s characters to place crafting orders with :new:\n'
                 + '- `/gamon simulate` will simulate a character running all Mythic+ dungeons at a single keystone level\n'
                 + '- `/gamon push` will tell which dungeons a character could run to slightly improve their Mythic+ rating\n'
                 + '- `/gamon goal` will provide a plan for dungeons a character can complete to reach a goal Mythic+ rating\n'
