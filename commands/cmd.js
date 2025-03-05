@@ -9,11 +9,9 @@ const { MAX_KEY_LEVEL_AVAILABLE } = require('../tww-current/helpers');
 module.exports = {
     data: new SlashCommandBuilder()
     .setName('gamon')
-    // TODO: Update this or remove it.
-    .setDescription('New gamon desc test')
     .addSubcommand((sc) => sc.setName('help').setDescription('Learn what Gamon can do for you'))
     .addSubcommand((sc) => sc.setName('craft')
-        .setDescription('Quickly find characters to fill your crafting orders')
+        .setDescription('Quickly find one of Tyrianth\'s characters to fill your crafting orders')
     )
     .addSubcommand((sc) =>
         sc.setName('simulate')
@@ -49,8 +47,7 @@ module.exports = {
         const subcommand = interaction.options.getSubcommand();
         if (subcommand === 'help') {
             const content = '### *I, Gamon, will save us!*\n\nGamon can provide information about completing Mythic+ dungeons at specific keystone levels (up to level 20) and how that might impact a character\'s Mythic+ rating.\n'
-                + '**NEW:** Gamon can now easily help you coordinate crafting orders with guild member Tyrianth!\n\n'
-                + '- `/gamon craft` will help Tyrianth make it easier to keep track of crafting orders you have requested from him\n'
+                + '- :new: `/gamon craft` will help you find which of Tyrianth\'s characters to place crafting orders with\n'
                 + '- `/gamon simulate` will simulate a character running all Mythic+ dungeons at a single keystone level\n'
                 + '- `/gamon push` will tell which dungeons a character could run to slightly improve their Mythic+ rating\n'
                 + '- `/gamon goal` will provide a plan for dungeons a character can complete to reach a goal Mythic+ rating\n'

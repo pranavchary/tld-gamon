@@ -76,8 +76,8 @@ const PROFESSION_OPTIONS = [
     { label: 'Inscription', value: PROFESSIONS.Inscription },
     { label: 'Jewelcrafting', value: PROFESSIONS.Jewelcrafting },
     { label: 'Leatherworking', value: PROFESSIONS.Leatherworking },
-    // { label: 'Mining', value: PROFESSIONS.Mining },
-    // { label: 'Skinning', value: PROFESSIONS.Skinning },
+    { label: 'Mining', value: PROFESSIONS.Mining },
+    { label: 'Skinning', value: PROFESSIONS.Skinning },
     { label: 'Tailoring', value: PROFESSIONS.Tailoring }
 ];
 
@@ -447,7 +447,7 @@ const CRAFTING_MAP = {
             [CRAFTERS.Varus]: ['Sanctified Torchbearer\'s Grips', 'Glyph-Etched Gauntlets'],
             [CRAFTERS.Swain]: ['Waders of the Unifying Flame', 'Rune-Branded Kickers', 'Rune-Branded Legwraps'],
             [CRAFTERS.Akali]: ['Adrenal Surge Clasp', 'Roiling Thunderstrike Talons', 'Rune-Branded Grasps', 'Rune-Branded Waistband'],
-            [CRAFTERS.Artamis]: [/*'Vambraces of Deepening Flame', */'Glyph-Etched Vambraces'],
+            [CRAFTERS.Artamis]: ['Vambraces of Deepening Darkness', 'Glyph-Etched Vambraces'],
             [CRAFTERS.Kindred]: ['Busy Bee\'s Buckle', 'Glyph-Etched Binding'],
             [CRAFTERS.Heimerdinger]: ['Reinforced Setae Flyers', 'Glyph-Etched Cuisses', 'Glyph-Etched Stompers'],
             [CRAFTERS.RekSai]: ['Rook Feather Wristwraps', 'Rune-Branded Armbands']

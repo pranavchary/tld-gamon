@@ -204,7 +204,7 @@ bot.on(Events.InteractionCreate, async (interaction) => {
 
 	const infoButton = new ButtonBuilder()
 		.setCustomId('craft-info')
-		.setLabel('Only confirm AFTER placing crafting order in-game')
+		.setLabel('Copy crafter\'s name from above & confirm AFTER order is placed')
 		.setStyle(ButtonStyle.Secondary)
 		.setDisabled(true);
 	
