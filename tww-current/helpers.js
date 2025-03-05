@@ -1,23 +1,23 @@
 const DUNGEON_SHORTNAME_MAP = {
-    ARAK: 'Ara-Kara',
-    COT: 'City of Threads',
-    GB: 'Grim Batol',
-    MISTS: 'Mists of Tirna Scithe',
-    SIEGE: 'Seige of Boralus',
-    DAWN: 'Dawnbreaker',
-    NW: 'Necrotic Wake',
-    SV: 'Stonevault',
+    BREW: 'Cinderbrew Meadery',
+    DFC: 'Darkflame Cleft',
+    FLOOD: 'Operation: Floodgate',
+    ML: 'The MOTHERLODE!!',
+    PSF: 'Priory of the Sacred Flame',
+    ROOK: 'The Rookery',
+    TOP: 'Theater of Pain',
+    WORK: 'Mechagon Workshop',
 };
 
 const DUNGEON_SHORTNAME_SLUG_MAP = {
-    ARAK: 'arakara-city-of-echoes',
-    COT: 'city-of-threads',
-    GB: 'grim-batol',
-    MISTS: 'mists-of-tirna-scithe',
-    SIEGE: 'siege-of-boralus',
-    DAWN: 'the-dawnbreaker',
-    NW: 'the-necrotic-wake',
-    SV: 'the-stonevault'
+    BREW: 'cinderbrew-meadery',
+    DFC: 'darkflame-cleft',
+    FLOOD: 'operation-floodgate',
+    ML: 'the-motherlode',
+    PSF: 'priory-of-the-sacred-flame',
+    ROOK: 'the-rookery',
+    TOP: 'theater-of-pain',
+    WORK: 'operation-mechagon-workshop',
 };
 
 const KEYLEVEL_BASESCORE_MAP = {
