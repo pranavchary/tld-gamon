@@ -1,23 +1,23 @@
 const DUNGEON_SHORTNAME_MAP = {
-    BREW: 'Cinderbrew Meadery',
-    DFC: 'Darkflame Cleft',
+    ARAK: 'Ara-Kara, City of Echoes',
+    DAWN: 'The Dawnbreaker',
+    EDA: 'Eco-Dome Aldani',
     FLOOD: 'Operation: Floodgate',
-    ML: 'The MOTHERLODE!!',
+    GMBT: 'Tazavesh: So\'leah\'s Gambit',
+    HOA: 'Halls of Atonement',
     PSF: 'Priory of the Sacred Flame',
-    ROOK: 'The Rookery',
-    TOP: 'Theater of Pain',
-    WORK: 'Mechagon Workshop',
+    STRT: 'Tazavesh: Streets of Wonder',
 };
 
 const DUNGEON_SHORTNAME_SLUG_MAP = {
-    BREW: 'cinderbrew-meadery',
-    DFC: 'darkflame-cleft',
+    ARAK: 'arakara-city-of-echoes',
+    DAWN: 'the-dawnbreaker',
+    EDA: 'ecodome-aldani',
     FLOOD: 'operation-floodgate',
-    ML: 'the-motherlode',
+    GMBT: 'tazavesh-soleahs-gambit',
+    HOA: 'halls-of-atonement',
     PSF: 'priory-of-the-sacred-flame',
-    ROOK: 'the-rookery',
-    TOP: 'theater-of-pain',
-    WORK: 'operation-mechagon-workshop',
+    STRT: 'tazavesh-streets-of-wonder',
 };
 
 const KEYLEVEL_BASESCORE_MAP = {
