@@ -85,7 +85,7 @@ const CATEGORY_OPTIONS = [
     { label: 'Bags', value: CATEGORIES.Bags },
     { label: 'Consumable', value: CATEGORIES.Consumable },
     { label: 'Gear', value: CATEGORIES.Gear },
-    { label: 'Gems/Tinkers', value: CATEGORIES.GemsTinkers },
+    { label: 'Gems/Tinkers/Fibers', value: CATEGORIES.GemsTinkers },
     { label: 'Profession Equipment', value: CATEGORIES.ProfessionEquipment },
     { label: 'Reagent', value: CATEGORIES.Reagent },
     { label: 'Other', value: CATEGORIES.Other },
@@ -139,7 +139,6 @@ const CRAFTING_MAP = {
                 'Charged Claymore',
                 'Charged Hexsword',
                 'Charged Invoker',
-                'Charged Slicer',
                 'Everforged Dagger',
                 'Everforged Longsword',
                 'Everforged Stabber',
@@ -150,6 +149,7 @@ const CRAFTING_MAP = {
                 'Charged Facesmasher',
                 'Charged Halberd',
                 'Charged Runeaxe',
+                'Charged Slicer',
                 'Everforged Greataxe',
                 'Everforged Mace',
             ],
@@ -522,6 +522,14 @@ const CRAFTING_MAP = {
             [CRAFTERS.Genianna]: [
                 'Consecrated Cord',
                 'Consecrated Mantle'
+            ]
+        },
+        [CATEGORIES.GemsTinkers]: {
+            [CRAFTERS.Lux]: [
+                'Pure Chronomantic Fiber (Haste)',
+                'Pure Dexterous Fiber (Vers)',
+                'Pure Energizing Fiber (Mast)',
+                'Pure Precise Fiber (Crit)',
             ]
         },
         [CATEGORIES.ProfessionEquipment]: {
