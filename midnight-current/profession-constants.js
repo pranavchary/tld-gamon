@@ -625,28 +625,178 @@ const CRAFTING_MAP = {
     },
     [PROFESSIONS.Leatherworking]: {
         [CATEGORIES.Consumable]: {
-            
+            [CRAFTERS.Rengar]: ['Void-Touched Drums'],
+            [CRAFTERS.Tyrianth]: ['Blood Knight\'s Armor Kit', 'Forest Hunter\'s Armor Kit', 'Thalassian Scout Armor Kit']
         },
         [CATEGORIES.Gear]: {
-            
+            [CRAFTERS.Samira]: [
+                'Hexwoven Strand',
+                'Silvermoon Agent\'s Utility Belt',
+            ],
+            [CRAFTERS.Evalynn]: [
+                'Row Walker\'s Deflectors',
+                'Silvermoon Agent\'s Deflectors',
+                'Smuggler\'s Leather Wristbands',
+            ],
+            [CRAFTERS.Akali]: [
+                'Row Walker\'s Insurance',
+                'Silvermoon Agent\'s Coat',
+                'Silvermoon Agent\'s Cover',
+                'Smuggler\'s Reinforced Hood',
+                'Smuggler\'s Leather Tunic',
+            ],
+            [CRAFTERS.Talon]: [
+                'Row Walker\'s Swiftgrips',
+                'Silvermoon Agent\'s Handwraps',
+                'Silvermoon Agent\'s Leggings',
+                'Smuggler\'s Reinforced Pants',
+                'Smuggler\'s Reinforced Binding',
+            ],
+            [CRAFTERS.RekSai]: ['Silvermoon Agent\'s Mantle', 'Smuggler\'s Reinforced Shoulderguards'],
+            [CRAFTERS.Gwen]: ['Silvermoon Agent\'s Sneakers', 'World Tree Rootwraps', 'Smuggler\'s Leather Footpads'],
+            [CRAFTERS.Quinn]: [
+                'Axe-Flingin\' Bands',
+                'Farstrider\'s Plated Bracers',
+                'Scout\'s Scaled Bracers',
+            ],
+            [CRAFTERS.Kayn]: [
+                'Farstrider\'s Brilliant Plumes',
+                'Scout\'s Polished Spaulders',
+            ],
+            [CRAFTERS.Heimerdinger]: [
+                'Farstrider\'s Razor Talons',
+                'World Tender\'s Rootslippers',
+                'Scout\'s Scaled Boots',
+            ],
+            [CRAFTERS.Kindred]: [
+                'Farstrider\'s Reinforced Faulds',
+                'Farstrider\'s Sharpened Claws',
+                'Ranger-General\'s Grips',
+                'Scout\'s Polished Legguards',
+                'Scout\'s Polished Gauntlets',
+            ],
+            [CRAFTERS.Artamis]: [
+                'Farstrider\'s Scouting Vest',
+                'Farstrider\'s Unwavering Visage',
+                'World Tender\'s Trunkplate',
+                'Scout\'s Polished Skullcap',
+                'Scout\'s Scaled Vest',
+            ],
+            [CRAFTERS.Varus]: [
+                'Farstrider\'s Trophy Belt',
+                'World Tender\'s Barkclasp',
+                'Scout\'s Polished Wraps',
+            ],
         },
         [CATEGORIES.ProfessionEquipment]: {
-            
+            [CRAFTERS.Pyke]: [
+                'Thalassian Alchemist\'s Mixcap',
+                'Thalassian Gemshaper\'s Grand Cover',
+                'Thalassian Herbtender\'s Cradle',
+                'Thalassian Hideshaper\'s Regalia',
+                'Thalassian Ironbender\'s Regalia',
+                'Thalassian Scrapmaster\'s Gauntlets',
+                'Thalassian Wildseeker\'s Stridercap',
+                'Thalassian Wildseeker\'s Workbag',
+                'Eversong Hunter\'s Headcover',
+                'Sin\'dorei Alchemist\'s Hat',
+                'Sin\'dorei Engineer\'s Gloves',
+                'Sin\'dorei Forgemaster\'s Cover',
+                'Sin\'dorei Herbalist\'s Backpack',
+                'Sin\'dorei Hunter\'s Pack',
+                'Sin\'dorei Jeweler\'s Cover',
+                'Sin\'dorei Leathershaper\'s Smock',
+                'Apprentice Smith\'s Apron',
+                'Chemist\'s Cap',
+                'Apprentice Jeweler\'s Apron',
+                'Tinker\'s Handguard',
+                'Hideworker\'s Cover',
+                'Skinner\'s Backpack',
+                'Eversong Botanist\'s Satchel',
+                'Skinner\'s Cap',
+            ]
         },
         [CATEGORIES.Reagent]: {
-            
+            [CRAFTERS.Swain]: ['Blessed Pango Charm', 'Devouring Banding', 'Primal Spore Banding'],
+            [CRAFTERS.Rengar]: [
+                'Infused Scalewoven Hide',
+                'Scalewoven Hide',
+                'Silvermoon Weapon Wrap',
+                'Sin\'dorei Armor Banding'
+            ]
         },
     },
     [PROFESSIONS.Tailoring]: {
         [CATEGORIES.Bags]: {
+            [CRAFTERS.Soraka]: ['Sunfire Silk Backpack'],
+            [CRAFTERS.Mel]: ['Arcanoweave Reagent Rucksack'],
+            [CRAFTERS.Malzahar]: ['Imbued Bright Linen Backpack', 'Bright Linen Reagent Satchel'],
         },
         [CATEGORIES.Consumable]: {
+            [CRAFTERS.Malzahar]: ['Bright Linen Bandage'],
         },
         [CATEGORIES.Gear]: {
+            [CRAFTERS.Lux]: [
+                'Adherent\'s Silken Shroud',
+                'Courtly Cloak',
+                'Arcanoweave Cloak',
+                'Sunfire Cloak',
+            ],
+            [CRAFTERS.Briar]: [
+                'Martyr\'s Bindings',
+                'Courtly Wrists',
+                'Arcanoweave Bracers',
+                'Sunfire Bracers',
+            ],
+            [CRAFTERS.Lissandra]: [
+                'Martyr\'s Crown',
+                'Courtly Helm',
+            ],
+            [CRAFTERS.Hera]: [
+                'Martyr\'s Gloves',
+                'Courtly Globes',
+            ],
+            [CRAFTERS.Karma]: [
+                'Martyr\'s Leggings',
+                'Courtly Pants',
+            ],
+            [CRAFTERS.Morgana]: [
+                'Martyr\'s Mantle',
+                'Courtly Shoulders',
+            ],
+            [CRAFTERS.Annie]: [
+                'Martyr\'s Slippers',
+                'Courtly Slippers',
+                'Arcanoweave Treads',
+                'Sunfire Treads',
+            ],
+            [CRAFTERS.Genianna]: [
+                'Martyr\'s Vestments',
+                'Courtly Robes',
+            ],
+            [CRAFTERS.Beveviam]: [
+                'Martyr\'s Wraistwrap',
+                'Courtly Belt',
+                'Arcanoweave Cord',
+                'Sunfire Sash',
+            ],
         },
         [CATEGORIES.ProfessionEquipment]: {
         },
         [CATEGORIES.Reagent]: {
+            [CRAFTERS.Mel]: ['Arcanoweave Bolt', 'Arcanoweave Lining', 'Arcanoweave Spellthread'],
+            [CRAFTERS.Soraka]: ['Sunfire Silk Bolt', 'Sunfire Silk Lining', 'Sunfire Silk Spellthread'],
+            [CRAFTERS.Malzahar]: ['Imbued Bright Linen Bolt', 'Bright Linen Bolt', 'Bright Linen Spellthread'],
+        },
+        [CATEGORIES.Other]: {
+            [CRAFTERS.Lux]: [
+                'Blood-Tempered Cape',
+                'Farstrider\'s Embroidered Cover',
+                'Scout\'s Cape',
+                'Silvermoon Agent\'s Drape',
+                'Smuggler\'s Cloak',
+                'Spellbreaker\'s Shroud',
+            ]
         }
     }
 };
