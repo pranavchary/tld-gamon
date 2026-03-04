@@ -1,0 +1,658 @@
+const PROFESSIONS = {
+    Alchemy: 'alchemy',
+    Blacksmithing: 'blacksmithing',
+    Cooking: 'cooking',
+    Enchanting: 'enchanting',
+    Engineering: 'engineering',
+    Fishing: 'fishing',
+    Herbalism: 'herbalism',
+    Inscription: 'inscription',
+    Jewelcrafting: 'jewelcrafting',
+    Leatherworking: 'leatherworking',
+    Mining: 'mining',
+    Skinning: 'skinning',
+    Tailoring: 'tailoring'
+};
+
+const CATEGORIES = {
+    Bags: 'bags',
+    Consumable: 'consumable',
+    Decor: 'decor',
+    Gear: 'gear',
+    Gems: 'gems',
+    ProfessionEquipment: 'prof-equipment',
+    PvpGear: 'pvp-gear',
+    Reagent: 'reagent',
+    Other: 'other'
+};
+
+const CRAFTERS = {
+    Aatrox: 'Aætrox',
+    Arthas: 'Ärthæs',
+    DrMundo: 'Drmundo',
+    Mordekaiser: 'Mordekaisær',
+    Nasus: 'Næsus',
+    Sion: 'Sion',
+    Evalynn: 'Evælynn',
+    RekSai: 'Ræksai',
+    Swain: 'Swæin',
+    Tyrainth: 'Tyrainth',
+    Kayn: 'Kæyn',
+    Artamis: 'Ärtæmis',
+    Heimerdinger: 'Heimerdingær',
+    Kindred: 'Kindræd',
+    Varus: 'Værus',
+    Quinn: 'Quinn',
+    Annie: 'Anniæ',
+    Hera: 'Heræ',
+    LeBlanc: 'Læblanc',
+    Lissandra: 'Lissandræ',
+    Brand: 'Brænd',
+    KSante: 'Ksantæ',
+    LeeSin: 'Leæsin',
+    Sett: 'Sætt',
+    Volibear: 'Volibeær',
+    Qiyana: 'Qiyæna',
+    Garen: 'Gæren',
+    JarvanIV: 'Jarvæniv',
+    Leona: 'Leonæ',
+    Taric: 'Tæric',
+    Tyrianth: 'Tyriænth',
+    Trundle: 'Trundlæ',
+    Genianna: 'Genianna',
+    Karma: 'Karmæ',
+    Lux: 'Lüx',
+    Soraka: 'Sorakæ',
+    Mel: 'Mel',
+    Akali: 'Akæli',
+    Gwen: 'Gwæn',
+    Pyke: 'Pykæ',
+    Samira: 'Sæmira',
+    Rengar: 'Rængar',
+    Talon: 'Tælon',
+    Hotahumm: 'Hotahumm',
+    Illaoi: 'Illæoi',
+    Naafiri: 'Næafiri',
+    Ryze: 'Ryzæ',
+    Kennen: 'Kænnen',
+    Beveviam: 'Beveviam',
+    Briar: 'Briær',
+    Malzahar: 'Malzahær',
+    Morgana: 'Morganæ',
+    BelVeth: 'Bælvæth',
+    Artura: 'Ärtura',
+    Darius: 'Dærius',
+    Jax: 'Jæxx',
+    Olaf: 'Olæff',
+    Kled: 'Klæd',
+    AurelionSol: 'Äurelionsol',
+    Smolder: 'Smoldær',
+    Anivia: 'Äniviæ',
+    Alistar: 'Älistar',
+    Gorothe: 'Gorothe',
+    Azir: 'Äzir',
+    Ivern: 'Iværn',
+    Nidalee: 'Nidælee',
+    Gragas: 'Grægas',
+    Gnar: 'Gnær',
+    AnyAlchemist: 'Illæoi, Hotahumm, Sætt, Volibeær, or Äzir'
+};
+
+const PROFESSION_OPTIONS = [
+    { label: 'Alchemy', value: PROFESSIONS.Alchemy },
+    { label: 'Blacksmithing', value: PROFESSIONS.Blacksmithing },
+    { label: 'Cooking', value: PROFESSIONS.Cooking },
+    { label: 'Enchanting', value: PROFESSIONS.Enchanting },
+    { label: 'Engineering', value: PROFESSIONS.Engineering },
+    { label: 'Fishing', value: PROFESSIONS.Fishing },
+    { label: 'Herbalism', value: PROFESSIONS.Herbalism },
+    { label: 'Inscription', value: PROFESSIONS.Inscription },
+    { label: 'Jewelcrafting', value: PROFESSIONS.Jewelcrafting },
+    { label: 'Leatherworking', value: PROFESSIONS.Leatherworking },
+    { label: 'Mining', value: PROFESSIONS.Mining },
+    { label: 'Skinning', value: PROFESSIONS.Skinning },
+    { label: 'Tailoring', value: PROFESSIONS.Tailoring }
+];
+
+const CATEGORY_OPTIONS = [
+    { label: 'Bags', value: CATEGORIES.Bags },
+    { label: 'Consumable', value: CATEGORIES.Consumable },
+    { label: 'Gear', value: CATEGORIES.Gear },
+    { label: 'Gems', value: CATEGORIES.Gems },
+    { label: 'Profession Equipment', value: CATEGORIES.ProfessionEquipment },
+    // { label: 'Gear (PVP)', value: CATEGORIES.PvpGear },
+    { label: 'Reagent', value: CATEGORIES.Reagent },
+    { label: 'Other', value: CATEGORIES.Other },
+];
+
+const CRAFTING_MAP = {
+    [PROFESSIONS.Alchemy]: {
+        [CATEGORIES.Consumable]: {
+            [CRAFTERS.Illaoi]: [
+                'Light\'s Potential',
+                'Potion of Zealotry',
+                'Light\'s Preservation',
+                'Lightfused Mana Potion',
+                'Refreshing Serum',
+                'Silvermoon Health Potion',
+                'Enlightenment Tonic',
+                'Voidlight Potion Cauldron',
+            ],
+            [CRAFTERS.Hotahumm]: [
+                'Potion of Devoured Dreams',
+                'Potion of Recklessness',
+                'Amani Extract',
+                'Draught of Rampant Abandon',
+                'Void-Shrouded Tincture',
+                'Entropic Extract',
+            ],
+            [CRAFTERS.Sett]: [
+                'Cauldron of Sin\'dorei Flasks',
+                'Flask of the Blood Knights',
+                'Flask of the Magisters',
+                'Flask of the Shattered Sun',
+                'Flask of Thalassian Resistance',
+                'Vicious Flask of Thalassian Honor',
+            ],
+            [CRAFTERS.Volibear]: [
+                'Haranir Phial of Finesse',
+                'Haranir Phial of Ingenuity',
+                'Haranir Phial of Perception',
+            ]
+            
+        },
+        [CATEGORIES.Reagent]: {
+            [CRAFTERS.Azir]: [
+                'Bouquet of Herbs',
+                'Box of Rocks',
+                'School of Gems',
+                'Wondrous Synergist',
+                'Composite Flora',
+                'Mote of Light (Transmute)',
+                'Mote of Primal Energy (Transmute)',
+                'Mote of Pure Void (Transmute)',
+                'Mote of Wild Magic (Transmute)',
+            ],
+            [CRAFTERS.AnyAlchemist]: ['Magister\'s Alchmeist Stone', 'Primal Philosopher\'s Stone']
+        }
+    },
+    [PROFESSIONS.Blacksmithing]: {
+        [CATEGORIES.Consumable]: {
+            [CRAFTERS.Taric]: [
+                'Refulgent Weightstone',
+                'Refulgent Whetstone',
+            ],
+            [CRAFTERS.Tyrianth]: ['Refulgent Razorstone']
+        },
+        [CATEGORIES.Gear]: {
+            [CRAFTERS.Mordekaiser]: [
+                'Blood Knight\'s Warblade',
+                'Bloomforged Claw',
+                'Farstrider\'s Mercy',
+                'Magister\'s Mana Sword',
+                'Magister\'s Ritual Knife',
+                'Primalforged Knuckles',
+                'Dawnforged Long Blade',
+                'Dawnforged Edge',
+                'Dawnforged Ritual Knife',
+            ],
+            [CRAFTERS.Aatrox]: [
+                'Blood Knight\'s Impetus',
+                'Blood Knight\'s Mercy',
+                'Bloomforged Greataxe',
+                'Farstrider\'s Chopper',
+                'Magister\'s Cleaver',
+                'Magister\'s Valediction',
+                'Dawnforged War Mace',
+                'Dawnforged Splitter',
+                'Primalforged Heavy Axe',
+            ],
+            [CRAFTERS.Arthas]: ['Spellbreaker\'s Bracers', 'Blood-Tempered Bracers'],
+            [CRAFTERS.Leona]: ['Knight-Commander\'s Palisade', 'Blood-Tempered Bulwark'],
+            [CRAFTERS.DrMundo]: ['Spellbreaker\'s Shelter', 'Blood-Tempered Chestplate'],
+            [CRAFTERS.Darius]: ['Murder Row Fleet Feet', 'Spellbreaker\'s March', 'Blood-Tempered Greaves'],
+            [CRAFTERS.Olaf]: ['Spellbreaker\'s Girdle', 'Blood-Tempered Greatbelt'],
+            [CRAFTERS.Nasus]: ['Spellbreaker\'s Legguards', 'Blood-Tempered Leggings'],
+            [CRAFTERS.JarvanIV]: ['Spellbreaker\'s Cover', 'Blood-Tempered Basinet'],
+            [CRAFTERS.Artura]: ['Spellbreaker\'s Mantle', 'Blood-Tempered Pauldrons'],
+            [CRAFTERS.Jax]: ['Spellbreaker\'s Resolve', 'Blood-Tempered Gauntlets'],
+        },
+        [CATEGORIES.PvpGear]: {
+            [CRAFTERS.Leona]: ['Thalassian Competitor\'s Bulwark'],
+            [CRAFTERS.Mordekaiser]: [
+                'Thalassian Competitor\'s Greatsword',
+                'Thalassian Competitor\'s Knife',
+                'Thalassian Competitor\'s Skewer',
+                'Thalassian Competitor\'s Sword',
+            ],
+            [CRAFTERS.Aatrox]: ['Thalassian Competitor\'s Maxim', 'Thalassian Competitor\'s Pickaxe', 'Thalassian Competitor\'s Splitter'],
+            [CRAFTERS.Arthas]: ['Thalassian Competitor\'s Plate Armguards'],
+            [CRAFTERS.DrMundo]: ['Thalassian Competitor\'s Plate Breastplate'],
+            [CRAFTERS.Jax]: ['Thalassian Competitor\'s Plate Gauntlets'],
+            [CRAFTERS.Nasus]: ['Thalassian Competitor\'s Plate Greaves'],
+            [CRAFTERS.JarvanIV]: ['Thalassian Competitor\'s Plate Helm'],
+            [CRAFTERS.Artura]: ['Thalassian Competitor\'s Plate Pauldrons'],
+            [CRAFTERS.Darius]: ['Thalassian Competitor\'s Plate Sabatons'],
+            [CRAFTERS.Olaf]: ['Thalassian Competitor\'s Plate Waistguard'],
+        },
+        [CATEGORIES.ProfessionEquipment]: {
+            [CRAFTERS.Tyrianth]: [
+                'Sunforged Blacksmith\'s Toolbox',
+                'Sunforged Blacksmith\'s Hammer',
+                'Sunforged Leatherworker\'s Knife',
+                'Sunforged Leatherworker\'s Toolset',
+                'Sunforged Needle Set',
+                'Sunforged Pickaxe',
+                'Sunforged Sickle',
+                'Sunforged Skinning Knife',
+                'Sun-Blessed Blacksmith\'s Toolbox',
+                'Sun-Blessed Blacksmith\'s Hammer',
+                'Sun-Blessed Leatherworker\'s Knife',
+                'Sun-Blessed Leatherworker\'s Toolset',
+                'Sun-Blessed Needle Set',
+                'Sun-Blessed Pickaxe',
+                'Sun-Blessed Sickle',
+                'Sun-Blessed Skinning Knife',
+                'Thalassian Blacksmith\'s Toolbox',
+                'Thalassian Blacksmith\'s Hammer',
+                'Thalassian Leatherworker\'s Knife',
+                'Thalassian Leatherworker\'s Toolset',
+                'Thalassian Needle Set',
+                'Thalassian Pickaxe',
+                'Thalassian Sickle',
+                'Thalassian Skinning Knife',
+            ],
+        },
+        [CATEGORIES.Reagent]: {
+            [CRAFTERS.Garen]: ['Sterling Alloy', 'Gloaming Alloy', 'Refulgent Copper Ingot'],
+        },
+        [CATEGORIES.Other]: {
+            [CRAFTERS.Tyrianth]: ['Refulgent Repair Hammer', 'Thalassian Skeleton Key']
+        },
+    },
+    // [PROFESSIONS.Cooking]: {},
+    [PROFESSIONS.Enchanting]: {
+        [CATEGORIES.Consumable]: {
+            [CRAFTERS.Briar]: ['Oil of Dawn', 'Smuggler\'s Enchanted Edge', 'Thalassian Phoenix Oil'],
+            [CRAFTERS.Hera]: [
+                'Enchant Boots - Farstrider\'s Hunt',
+                'Enchant Helm - Rune of Avoidance',
+                'Enchant Helm - Empowered Rune of Avoidance',
+                'Enchant Shoulders - Silvermoon\'s Mending',
+                'Enchant Shoulders - Thalassian Recovery',
+            ],
+            [CRAFTERS.Genianna]: [
+                'Enchant Boots - Lynx\'s Dexterity',
+                'Enchant Helm - Hex of Leeching',
+                'Enchant Helm - Empowered Hex of Leeching',
+                'Enchant Shoulders - Akil\'zon\'s Swiftness',
+                'Enchant Shoulders - Flight of the Eagle',
+            ],
+            [CRAFTERS.Mel]: [
+                'Enchant Boots - Shaldrassil\'s Roots',
+                'Enchant Helm - Blessing of Speed',
+                'Enchant Helm - Empowered Blessing of Speed',
+                'Enchant Shoulders - Amirdrassil\'s Grace',
+                'Enchant Shoulders - Nature\'s Grace',
+            ],
+            [CRAFTERS.Brand]: [
+                'Enchant Chest - Mark of Nalorakk',
+                'Enchant Ring - Eyes of the Eagle',
+                'Enchant Ring - Zul\'jin\'s Mastery',
+                'Enchant Ring - Amani Mastery',
+                'Enchant Weapon - Berserker\'s Rage',
+                'Enchant Weapon - Jan\'alai\'s Precision',
+                'Enchant Weapon - Strength of Halazzi',
+            ],
+            [CRAFTERS.Annie]: [
+                'Enchant Chest - Mark of the Magister',
+                'Enchant Ring - Silvermoon\'s Alacrity',
+                'Enchant Ring - Silvermoon\'s Tenacity',
+                'Enchant Ring - Thalassian Versatility',
+                'Enchant Ring - Thalassian Haste',
+                'Enchant Weapon - Acuity of the Ren\'dorei',
+                'Enchant Weapon - Arcane Mastery',
+                'Enchant Weapon - Flames of the Sin\'dorei',
+            ],
+            [CRAFTERS.Soraka]: [
+                'Enchant Chest - Mark of the Rootwarden',
+                'Enchant Chest - Mark of the Worldsoul',
+                'Enchant Ring - Nature\'s Fury',
+                'Enchant Ring - Nature\'s Wrath',
+                'Enchant Weapon - Worldsoul Aegis',
+                'Enchant Weapon - Worldsoul Cradle',
+                'Enchant Weapon - Worldsoul Tenacity',
+            ],
+            [CRAFTERS.Karma]: ['Enchant Tool - Amani Perception', 'Enchant Tool - Amani Resourcefulness'],
+            [CRAFTERS.Beveviam]: ['Enchant Tool - Haranir Finesse', 'Enchant Tool - Haranir Multicrafting'],
+            [CRAFTERS.Lissandra]: ['Enchant Tool - Ren\'dorei Ingenuity', 'Enchant Tool - Sin\'dorei Swiftness']
+        },
+        [CATEGORIES.Gear]: {
+            [CRAFTERS.Morgana]: ['Magister\'s Grand Focus', 'Thalassian Spellweaver\'s Wand']
+        },
+        [CATEGORIES.ProfessionEquipment]: {
+            [CRAFTERS.Morgana]: ['Runed Dazzling Thorium Rod', 'Runed Brilliant Silver Rod', 'Runed Refulgent Copper Rod'],
+        },
+        [CATEGORIES.Reagent]: {
+            [CRAFTERS.LeBlanc]: ['Radiant Shards', 'Eversinging Dust']
+        },
+        [CATEGORIES.Other]: {
+            [CRAFTERS.BelVeth]: [
+                'Illusory Adornment - Blooming Light',
+                'Illusory Adornment - Nature\'s Embrace',
+                'Illusory Adornment - Voidtouched',
+                'Gleeful Glamour - Blood Elf',
+                'Gleeful Glamour - Dark Iron Dwarf',
+                'Gleeful Glamour - Draenei',
+                'Gleeful Glamour - Dwarf',
+                'Gleeful Glamour - Earthen',
+                'Gleeful Glamour - Gnome',
+                'Gleeful Glamour - Goblin',
+                'Gleeful Glamour - Haranir',
+                'Gleeful Glamour - Highmountain Tauren',
+                'Gleeful Glamour - Human',
+                'Gleeful Glamour - Kul Tiran',
+                'Gleeful Glamour - Lightforged Draenei',
+                'Gleeful Glamour - Mag\'har Orc',
+                'Gleeful Glamour - Mechagnome',
+                'Gleeful Glamour - Night Elf',
+                'Gleeful Glamour - Nightborne',
+                'Gleeful Glamour - Orc',
+                'Gleeful Glamour - Pandaren',
+                'Gleeful Glamour - Tauren',
+                'Gleeful Glamour - Troll',
+                'Gleeful Glamour - Undead',
+                'Gleeful Glamour - Void Elf',
+                'Gleeful Glamour - Vulpera',
+                'Gleeful Glamour - Worgen',
+                'Gleeful Glamour - Zandalari Troll'
+            ]
+        }
+    },
+    [PROFESSIONS.Engineering]: {
+        [CATEGORIES.Consumable]: {
+            [CRAFTERS.Nasus]: [
+                'Emergency Soul Link',
+                'Curious Red Button',
+                'Farstrider\'s Hawkeye',
+                'Laced Zoomshots',
+                'Smuggler\'s Lynxeye',
+                'Weighted Boomshots',
+                'M3DDY',
+                'W-47CH D0G',
+            ]
+        },
+        [CATEGORIES.Gear]: {
+            [CRAFTERS.Aatrox]: [
+                'P.0.W. x3',
+                'Evercore Dome Dinger',
+            ],
+            [CRAFTERS.Akali]: [
+                'Aetherlume Eye Wrap',
+                'Quel\'dorei Cloth Goggles',
+                'Evercore Zoomshroud',
+                'Aetherlume Optics',
+                'Quel\'dorei Leather Optics',
+                'Evercore Shade',
+                'Aetherlume Vision Shroud',
+                'Quel\'dorei Mail Shroud',
+                'Evercore Reconissance',
+                'Aetherlume Sun Guard',
+                'Quel\'dorei Visor',
+                'Evercore Vision Guard',
+            ],
+            [CRAFTERS.Arthas]: [
+                'Aetherlume Silken Cuffs',
+                'Quel\'dorei Silken Cuffs',
+                'Evercore Wrist Latch',
+                'Aetherlume Bands Cuffs',
+                'Quel\'dorei Bands',
+                'Evercore Binding',
+                'Aetherlume Bracelets',
+                'Quel\'dorei Bracelets',
+                'Evercore Chainguards',
+                'Aetherlume Guards',
+                'Quel\'dorei Guards',
+                'Evercore Gear Weight',
+            ],
+            [CRAFTERS.Gwen]: [
+                'Aetherlume Softsteppers',
+                'Quel\'dorei Softsteppers',
+                'Evercore Swiftfeet',
+                'Aetherlume Runners',
+                'Quel\'dorei Runners',
+                'Evercore Switchwraps',
+                'Aetherlume Clonkers',
+                'Quel\'dorei Clonkers',
+                'Evercore Turbochains',
+                'Aetherlume Stompers',
+                'Quel\'dorei Stompers',
+                'Evercore Greaseplates',
+            ]
+        },
+        [CATEGORIES.ProfessionEquipment]: {
+            [CRAFTERS.Talon]: ['Giga-Gem Grippers', 'Sin\'dorei Clampers', 'Farstrider Clampers'],
+            [CRAFTERS.Pyke]: ['Head-Mounted Beam Bummer', 'Sin\'dorei Headlamp', 'Junker\'s Junk Visor'],
+            [CRAFTERS.Samira]: [
+                'Heavy-Duty Rock Assister',
+                'Rock Bonkin\' Hardhat',
+                'Sin\'dorei Gilded Hardhat',
+                'Junker\'s Big Ol\' Bag',
+                'Farstrider Hardhat',
+                'Farstrider Rock Satchel',
+            ],
+            [CRAFTERS.DrMundo]: ['Sin\'dorei Snippers', 'Self-Sharpening Sin\'dorei Snippers', 'Farstrider Fabric Cutters'],
+            [CRAFTERS.Rengar]: ['Sin\'dorei Reeler\'s Rod', 'Sin\'dorei Angler\'s Rod', 'Farstrider Hobbyist Rod'],
+            [CRAFTERS.Mordekaiser]: [
+                'Turbo-Junker\'s Multitool v9',
+                'Turbo-Junker\'s Multitool',
+                'Junker\'s Multitool',
+            ]
+        },
+        [CATEGORIES.Reagent]: {
+            [CRAFTERS.Sion]: [
+                'Soul Sprocket',
+                'Song Gear',
+                'Consistent Cogwheel',
+                'Flux Cogwheel',
+                'Greased Cogwheel',
+                'Perfected Cogwheel',
+                'Kinetic Ankle Primers',
+                'Lucky Keychain'
+            ],
+            [CRAFTERS.Nasus]: [
+                'B1P, Scorcher of Souls',
+                'M3DDY, Travel Sized',
+                'HU5H, Nonchalant Pup',
+                'B0P, Curator of Booms',
+            ]
+        },
+    },
+    [PROFESSIONS.Inscription]: {
+        [CATEGORIES.Consumable]: {
+            [CRAFTERS.Sett]: [
+                'Thalassian Treatise on Alchemy',
+                'Thalassian Treatise on Blacksmithing',
+                'Thalassian Treatise on Enchanting',
+                'Thalassian Treatise on Engineering',
+                'Thalassian Treatise on Herbalism',
+                'Thalassian Treatise on Inscription',
+                'Thalassian Treatise on Jewelcrafting',
+                'Thalassian Treatise on Leatherworking',
+                'Thalassian Treatise on Mining',
+                'Thalassian Treatise on Skinning',
+                'Thalassian Treatise on Tailoring',
+            ],
+            [CRAFTERS.Ivern]: ['Vantus Rune: Radiant'],
+            [CRAFTERS.Azir]: [
+                'Contract: The Amani Tribe',
+                'Contract: The Hara\'ti',
+                'Contract: The Silvermoon Court',
+                'Contract: The Singularity',
+            ]
+        },
+        [CATEGORIES.Gear]: {
+            [CRAFTERS.Volibear]: [
+                'Aln\'hara Cane',
+                'Aln\'hara Pikestaff',
+                'Faunatender\'s Baton',
+                'Faunatender\'s Crutch',
+            ],
+            [CRAFTERS.Ryze]: ['Aln\'hara Lantern', 'Faunatender\'s Lamp'],
+            [CRAFTERS.Qiyana]: ['Aln\'hara Sprigshot', 'Faunatender\'s Trust'],
+            [CRAFTERS.Hotahumm]: ['Darkmoon Dominion: Blood'],
+            [CRAFTERS.LeeSin]: ['Darkmoon Dominion: Hunt'],
+            [CRAFTERS.Naafiri]: ['Darkmoon Dominion: Rot'],
+            [CRAFTERS.KSante]: ['Darkmoon Dominion: Void'],
+        },
+        [CATEGORIES.ProfessionEquipment]: {
+            [CRAFTERS.Illaoi]: ['Gilded Alchemist\'s Mixing Rod', 'Sin\'dorei Alchemist\'s Mixing Rod', 'Hobbyist Alchemist\'s Mixing Rod'],
+            [CRAFTERS.Sett]: ['Gilded Sin\'dorei Quill', 'Sin\'dorei Quill', 'Hobbyist Scribe\'s Quill'],
+            [CRAFTERS.Kennen]: ['Gilded Sin\'dorei Rolling Pin', 'Sin\'dorei Rolling Pin', 'Hobbyist Rolling Pin'],
+        },
+        [CATEGORIES.Reagent]: {
+            [CRAFTERS.Gnar]: ['Codified Azeroot', 'Soul Cipher'],
+            [CRAFTERS.Nidalee]: ['Sienna Ink', 'Munsell Ink'],
+            [CRAFTERS.Hotahumm]: ['Darkmoon Sigil: Blood'],
+            [CRAFTERS.LeeSin]: ['Darkmoon Sigil: Hunt'],
+            [CRAFTERS.Naafiri]: ['Darkmoon Sigil: Rot'],
+            [CRAFTERS.KSante]: ['Darkmoon Sigil: Void'],
+            [CRAFTERS.Gorothe]: [
+                'Thalassian Missive of the Peerless (Crit/Mastery)',
+                'Thalassian Missive of the Quickblade (Crit/Vers)',
+                'Thalassian Missive of the Fireflash (Crit/Haste)',
+                'Thalassian Missive of the Harmonious (Vers/Mastery)',
+                'Thalassian Missive of the Aurora (Haste/Vers)',
+                'Thalassian Missive of the Feverflare (Haste/Mastery)',
+                'Thalassian Missive of Crafting Speed',
+                'Thalassian Missive of Deftness',
+                'Thalassian Missive of Finesse',
+                'Thalassian Missive of Ingenuity',
+                'Thalassian Missive of Multicraft',
+                'Thalassian Missive of Perception',
+                'Thalassian Missive of Resourcefulness',
+            ]
+        }
+    },
+    [PROFESSIONS.Jewelcrafting]: {
+        [CATEGORIES.Gear]: {
+            [CRAFTERS.Tyrianth]: [
+                'Loa Worshiper\'s Band',
+                'Masterwork Sin\'dorei Band',
+                'Signet of Azerothian Blessings',
+                'Gleaming Copper Band',
+                'Thalassian Phoenix Torque',
+                'Masterwork Sin\'dorei Amulet',
+                'Voidstone Shielding Array',
+                'Nocturnal Charm',
+            ]
+        },
+        [CATEGORIES.Gems]: {
+            [CRAFTERS.Artura]: [
+                'Flawless Versatile Peridot (Haste/Vers)',
+                'Flawless Masterful Peridot (Haste/Mastery)',
+                'Flawless Deadly Peridot (Haste/Crit)',
+                'Flawless Quick Peridot (Haste)',
+                'Versatile Peridot (Haste/Vers)',
+                'Masterful Peridot (Haste/Mastery)',
+                'Deadly Peridot (Haste/Crit)',
+                'Quick Peridot (Haste)',
+            ],
+            [CRAFTERS.Darius]: [
+                'Flawless Versatile Lapis (Vers)',
+                'Flawless Masterful Lapis (Vers/Mastery)',
+                'Flawless Deadly Lapis (Vers/Crit)',
+                'Flawless Quick Lapis (Vers/Haste)',
+                'Versatile Lapis (Vers)',
+                'Masterful Lapis (Vers/Mastery)',
+                'Deadly Lapis (Vers/Crit)',
+                'Quick Lapis (Vers/Haste)',
+            ],
+            [CRAFTERS.Jax]: [
+                'Flawless Versatile Amethyst (Mastery/Vers)',
+                'Flawless Masterful Amethyst (Mastery)',
+                'Flawless Deadly Amethyst (Mastery/Crit)',
+                'Flawless Quick Amethyst (Mastery/Haste)',
+                'Versatile Amethyst (Mastery/Vers)',
+                'Masterful Amethyst (Mastery)',
+                'Deadly Amethyst (Mastery/Crit)',
+                'Quick Amethyst (Mastery/Haste)',
+                'Indecipherable Eversong Diamond',
+                'Powerful Eversong Diamond',
+                'Stoic Eversong Diamond',
+                'Telluric Eversong Diamond',
+            ],
+            [CRAFTERS.Olaf]: [
+                'Flawless Versatile Garnet (Crit/Vers)',
+                'Flawless Masterful Garnet (Crit/Mastery)',
+                'Flawless Deadly Garnet (Crit)',
+                'Flawless Quick Garnet (Crit/Haste)',
+                'Versatile Garnet (Crit/Vers)',
+                'Masterful Garnet (Crit/Mastery)',
+                'Deadly Garnet (Crit)',
+                'Quick Garnet (Crit/Haste)',
+            ],
+            [CRAFTERS.Taric]: [
+                'Deadly Sapphire (Vers/Crit)',
+                'Masterful Sapphire (Vers/Mastery)',
+                'Quick Sapphire (Verse/Haste)',
+                'Versatile Sapphire (Vers)'
+            ]
+        },
+        [CATEGORIES.ProfessionEquipment]: {
+            [CRAFTERS.Kled]: [
+                'Attuned Thalassian Rune-Prism',
+                'Flawless Text Scrutinizers',
+                'Mage-Eye Precision Loupes',
+                'Thalassian Scribe\'s Crystalline Lens',
+                'Improved Right-Handed Magnifying Glass',
+                'Sin\'dorei Enchanter\'s Crystal',
+                'Sin\'dorei Jeweler\'s Loupes',
+                'Sin\'dorei Scribe\'s Spectacles',
+                'Bold Biographer\'s Bifocals',
+                'Fantastic Font Focuser',
+                'Silvermoon Focusing Shard',
+                'Silvermoon Loupes',
+            ]
+        },
+        [CATEGORIES.Reagent]: {
+            [CRAFTERS.JarvanIV]: ['Prismatic Focusing Iris', 'Stabilizing Gemstone Bandolier'],
+            [CRAFTERS.Garen]: ['Kaleidoscopic Prism', 'Sin\'dorei Lens', 'Sunglass Vial']
+        },
+        [CATEGORIES.Other]: {
+            [CRAFTERS.Tyrianth]: ['Monologuer\'s Chalice']
+        }
+    },
+    [PROFESSIONS.Leatherworking]: {
+        [CATEGORIES.Consumable]: {
+            
+        },
+        [CATEGORIES.Gear]: {
+            
+        },
+        [CATEGORIES.ProfessionEquipment]: {
+            
+        },
+        [CATEGORIES.Reagent]: {
+            
+        },
+    },
+    [PROFESSIONS.Tailoring]: {
+        [CATEGORIES.Bags]: {
+        },
+        [CATEGORIES.Consumable]: {
+        },
+        [CATEGORIES.Gear]: {
+        },
+        [CATEGORIES.ProfessionEquipment]: {
+        },
+        [CATEGORIES.Reagent]: {
+        }
+    }
+};
+
+module.exports = {
+    PROFESSION_OPTIONS,
+    CATEGORY_OPTIONS,
+    CRAFTING_MAP
+};

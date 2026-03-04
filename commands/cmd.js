@@ -2,9 +2,9 @@ if (!process.env.NODE_ENV) require('dotenv').config();
 const { TLD_GUILD_ID } = process.env;
 const { MessageFlags } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { calculateTheWarWithinData } = require('../tww-current/commands');
+const { calculateData } = require('../midnight-current/commands');
 const { SAY_QUOTES, SHOUT_QUOTES, BUTT_QUOTES, KEY_LEVEL_TOO_HIGH_QUOTES, SHOUT_QUOTES_TLD } = require('../constants');
-const { MAX_KEY_LEVEL_AVAILABLE } = require('../tww-current/helpers');
+const { MAX_KEY_LEVEL_AVAILABLE } = require('../midnight-current/helpers');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -75,7 +75,7 @@ module.exports = {
             await interaction.reply({ content, flags: MessageFlags.Ephemeral });
         } else if (subcommand !== 'craft') {
             try {
-                await calculateTheWarWithinData(interaction);
+                await calculateData(interaction);
             } catch (e) {
                 console.error(e);
                 await interaction.reply({
