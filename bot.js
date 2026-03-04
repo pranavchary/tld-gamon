@@ -18,7 +18,7 @@ const {
 	CATEGORY_OPTIONS,
 	PROFESSION_OPTIONS,
 	CRAFTING_MAP
-} = require('./tww-current/profession-constants');
+} = require('./midnight-current/profession-constants');
 // const { initializeCache } = require('./cache-service');
 
 // Initialize Discord Bot
@@ -45,7 +45,7 @@ const craftSelectionMap = new Map();
 const getCraftingInstructions = (isTLDServer, appendedText) => {
 	let craftingInstructions = `
 	### :warning: This bot DOES NOT submit a crafting order automatically for you in WoW.
-	### :warning: Crafting orders confirmed in Discord WILL NOT be fulfilled if you have not submitted it in WoW.	
+	### Crafting orders confirmed in Discord WILL NOT be fulfilled if you have not submitted it in WoW.	
 	`;
 
 	if (isTLDServer) {
@@ -128,13 +128,27 @@ bot.on(Events.InteractionCreate, async (interaction) => {
 		);
 
 		const availableProfs = Object.entries(CRAFTING_MAP).filter(([, cats]) => Object.keys(cats).includes(category)).map(([prof]) => prof);
-		const professions = new StringSelectMenuBuilder()
-			.setCustomId('profession')
-			.setPlaceholder('Which profession can craft the item you want?')
-			.addOptions(PROFESSION_OPTIONS.filter((prof) => availableProfs.includes(prof.value)));
-		const professionRow = new ActionRowBuilder().addComponents(professions);
-		
-		await interaction.update({ content: getCraftingInstructions(interaction.guildId === TLD_GUILD_ID), components: [categoryRow, professionRow] });
+
+		if (availableProfs.length === 1) {
+			const profession = availableProfs[0];
+			craftSelectionMap.set(interaction.user.id, { category, profession });
+
+			const crafts = new StringSelectMenuBuilder()
+				.setCustomId('item-search')
+				.setPlaceholder('Which of these items would you like?')
+				.addOptions(Object.values(CRAFTING_MAP[profession][category]).flatMap((item) => item).map((item) => ({ label: item, value: item })));
+			const craftsRow = new ActionRowBuilder().addComponents(crafts);
+
+			await interaction.update({ content: getCraftingInstructions(interaction.guildId === TLD_GUILD_ID), components: [categoryRow, craftsRow] });
+		} else {
+			const professions = new StringSelectMenuBuilder()
+				.setCustomId('profession')
+				.setPlaceholder('Which profession can craft the item you want?')
+				.addOptions(PROFESSION_OPTIONS.filter((prof) => availableProfs.includes(prof.value)));
+			const professionRow = new ActionRowBuilder().addComponents(professions);
+
+			await interaction.update({ content: getCraftingInstructions(interaction.guildId === TLD_GUILD_ID), components: [categoryRow, professionRow] });
+		}
 	}
 });
 
@@ -186,18 +200,21 @@ bot.on(Events.InteractionCreate, async (interaction) => {
 	}
 
 	craftSelectionMap.set(interaction.user.id, { category, profession, item, crafter });
-	
+
+	const professionPresented = interaction.message.components[1]?.components[0]?.customId === 'profession';
+
 	const categoryRow = new ActionRowBuilder().addComponents(StringSelectMenuBuilder
 		.from(interaction.message.components[0].components[0])
 		.setOptions(interaction.message.components[0].components[0].options.map((opt) => ({ ...opt, default: opt.value === category })))
 	);
-	const professionRow = new ActionRowBuilder().addComponents(StringSelectMenuBuilder
+	const professionRow = professionPresented ? new ActionRowBuilder().addComponents(StringSelectMenuBuilder
 		.from(interaction.message.components[1].components[0])
 		.setOptions(interaction.message.components[1].components[0].options.map((opt) => ({ ...opt, default: opt.value === profession })))
-	);
+	) : null;
+	const craftsIndex = professionPresented ? 2 : 1;
 	const craftsRow = new ActionRowBuilder().addComponents(StringSelectMenuBuilder
-		.from(interaction.message.components[2].components[0])
-		.setOptions(interaction.message.components[2].components[0].options.map((opt) => ({ ...opt, default: opt.value === item })))
+		.from(interaction.message.components[craftsIndex].components[0])
+		.setOptions(interaction.message.components[craftsIndex].components[0].options.map((opt) => ({ ...opt, default: opt.value === item })))
 	);
 
 	const craftingInstructionsAddon = `\n:clipboard: **Your Crafter:** *${crafter}*`;
@@ -215,7 +232,8 @@ bot.on(Events.InteractionCreate, async (interaction) => {
 	
 	const confirmRow = new ActionRowBuilder().addComponents(infoButton, confirmButton);
 
-	await interaction.update({ content: getCraftingInstructions(interaction.guildId === TLD_GUILD_ID, craftingInstructionsAddon), components: [categoryRow, professionRow, craftsRow, confirmRow] });
+	const components = [categoryRow, professionRow, craftsRow, confirmRow].filter(Boolean);
+	await interaction.update({ content: getCraftingInstructions(interaction.guildId === TLD_GUILD_ID, craftingInstructionsAddon), components });
 });
 
 bot.on(Events.InteractionCreate, async (interaction) => {
