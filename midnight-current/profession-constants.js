@@ -15,14 +15,23 @@ const PROFESSIONS = {
 };
 
 const CATEGORIES = {
+    ArmorCloth: 'armor-cloth',
+    ArmorLeather: 'armor-leather',
+    ArmorMail: 'armor-mail',
+    ArmorPlate: 'armor-plate',
     Bags: 'bags',
     Consumable: 'consumable',
     Decor: 'decor',
-    Gear: 'gear',
+    EnchantsArmor: 'enchants-armor',
+    EnchantsWeapon: 'enchants-weapon',
+    EnchantsRing: 'enchants-ring',
+    EnchantsProfTool: 'enchants-prof-tool',
+    GearOther: 'gear-other',
+    GearPvp: 'gear-pvp',
     Gems: 'gems',
     ProfessionEquipment: 'prof-equipment',
-    PvpGear: 'pvp-gear',
     Reagent: 'reagent',
+    WeaponOffhand: 'weapon-offhand',
     Other: 'other'
 };
 
@@ -115,13 +124,21 @@ const PROFESSION_OPTIONS = [
 ];
 
 const CATEGORY_OPTIONS = [
+    { label: 'Armor (Cloth)', value: CATEGORIES.ArmorCloth },
+    { label: 'Armor (Leather)', value: CATEGORIES.ArmorLeather },
+    { label: 'Armor (Mail)', value: CATEGORIES.ArmorMail },
+    { label: 'Armor (Plate)', value: CATEGORIES.ArmorPlate },
     { label: 'Bags', value: CATEGORIES.Bags },
     { label: 'Consumable', value: CATEGORIES.Consumable },
-    { label: 'Gear', value: CATEGORIES.Gear },
+    { label: 'Enchants (Armor)', value: CATEGORIES.EnchantsArmor },
+    { label: 'Enchants (Ring)', value: CATEGORIES.EnchantsRing },
+    { label: 'Enchants (Weapon)', value: CATEGORIES.EnchantsWeapon },
+    { label: 'Enchants (Prof. Tool)', value: CATEGORIES.EnchantsProfTool },
     { label: 'Gems', value: CATEGORIES.Gems },
+    { label: 'Neck/Ring/Trinket', value: CATEGORIES.GearOther },
     { label: 'Profession Equipment', value: CATEGORIES.ProfessionEquipment },
-    // { label: 'Gear (PVP)', value: CATEGORIES.PvpGear },
     { label: 'Reagent', value: CATEGORIES.Reagent },
+    { label: 'Weapon/Off-Hand', value: CATEGORIES.WeaponOffhand },
     { label: 'Other', value: CATEGORIES.Other },
 ];
 
@@ -159,7 +176,6 @@ const CRAFTING_MAP = {
                 'Haranir Phial of Ingenuity',
                 'Haranir Phial of Perception',
             ]
-            
         },
         [CATEGORIES.Reagent]: {
             [CRAFTERS.Azir]: [
@@ -177,38 +193,8 @@ const CRAFTING_MAP = {
         }
     },
     [PROFESSIONS.Blacksmithing]: {
-        [CATEGORIES.Consumable]: {
-            [CRAFTERS.Taric]: [
-                'Refulgent Weightstone',
-                'Refulgent Whetstone',
-            ],
-            [CRAFTERS.Tyrianth]: ['Refulgent Razorstone']
-        },
-        [CATEGORIES.Gear]: {
-            [CRAFTERS.Mordekaiser]: [
-                'Blood Knight\'s Warblade',
-                'Bloomforged Claw',
-                'Farstrider\'s Mercy',
-                'Magister\'s Mana Sword',
-                'Magister\'s Ritual Knife',
-                'Primalforged Knuckles',
-                'Dawnforged Long Blade',
-                'Dawnforged Edge',
-                'Dawnforged Ritual Knife',
-            ],
-            [CRAFTERS.Aatrox]: [
-                'Blood Knight\'s Impetus',
-                'Blood Knight\'s Mercy',
-                'Bloomforged Greataxe',
-                'Farstrider\'s Chopper',
-                'Magister\'s Cleaver',
-                'Magister\'s Valediction',
-                'Dawnforged War Mace',
-                'Dawnforged Splitter',
-                'Primalforged Heavy Axe',
-            ],
+        [CATEGORIES.ArmorPlate]: {
             [CRAFTERS.Arthas]: ['Spellbreaker\'s Bracers', 'Blood-Tempered Bracers'],
-            [CRAFTERS.Leona]: ['Knight-Commander\'s Palisade', 'Blood-Tempered Bulwark'],
             [CRAFTERS.DrMundo]: ['Spellbreaker\'s Shelter', 'Blood-Tempered Chestplate'],
             [CRAFTERS.Darius]: ['Murder Row Fleet Feet', 'Spellbreaker\'s March', 'Blood-Tempered Greaves'],
             [CRAFTERS.Olaf]: ['Spellbreaker\'s Girdle', 'Blood-Tempered Greatbelt'],
@@ -217,7 +203,14 @@ const CRAFTING_MAP = {
             [CRAFTERS.Artura]: ['Spellbreaker\'s Mantle', 'Blood-Tempered Pauldrons'],
             [CRAFTERS.Jax]: ['Spellbreaker\'s Resolve', 'Blood-Tempered Gauntlets'],
         },
-        [CATEGORIES.PvpGear]: {
+        [CATEGORIES.Consumable]: {
+            [CRAFTERS.Taric]: [
+                'Refulgent Weightstone',
+                'Refulgent Whetstone',
+            ],
+            [CRAFTERS.Tyrianth]: ['Refulgent Razorstone']
+        },
+        [CATEGORIES.GearPvp]: {
             [CRAFTERS.Leona]: ['Thalassian Competitor\'s Bulwark'],
             [CRAFTERS.Mordekaiser]: [
                 'Thalassian Competitor\'s Greatsword',
@@ -265,6 +258,31 @@ const CRAFTING_MAP = {
         },
         [CATEGORIES.Reagent]: {
             [CRAFTERS.Garen]: ['Sterling Alloy', 'Gloaming Alloy', 'Refulgent Copper Ingot'],
+        },
+        [CATEGORIES.WeaponOffhand]: {
+            [CRAFTERS.Mordekaiser]: [
+                'Blood Knight\'s Warblade',
+                'Bloomforged Claw',
+                'Farstrider\'s Mercy',
+                'Magister\'s Mana Sword',
+                'Magister\'s Ritual Knife',
+                'Primalforged Knuckles',
+                'Dawnforged Long Blade',
+                'Dawnforged Edge',
+                'Dawnforged Ritual Knife',
+            ],
+            [CRAFTERS.Aatrox]: [
+                'Blood Knight\'s Impetus',
+                'Blood Knight\'s Mercy',
+                'Bloomforged Greataxe',
+                'Farstrider\'s Chopper',
+                'Magister\'s Cleaver',
+                'Magister\'s Valediction',
+                'Dawnforged War Mace',
+                'Dawnforged Splitter',
+                'Primalforged Heavy Axe',
+            ],
+            [CRAFTERS.Leona]: ['Knight-Commander\'s Palisade', 'Blood-Tempered Bulwark'],
         },
         [CATEGORIES.Other]: {
             [CRAFTERS.Tyrianth]: ['Refulgent Repair Hammer', 'Thalassian Skeleton Key']
@@ -327,7 +345,53 @@ const CRAFTING_MAP = {
             [CRAFTERS.Beveviam]: ['Enchant Tool - Haranir Finesse', 'Enchant Tool - Haranir Multicrafting'],
             [CRAFTERS.Lissandra]: ['Enchant Tool - Ren\'dorei Ingenuity', 'Enchant Tool - Sin\'dorei Swiftness']
         },
-        [CATEGORIES.Gear]: {
+        [CATEGORIES.EnchantsArmor]: {
+            [CRAFTERS.Hera]: [
+                'Enchant Boots - Farstrider\'s Hunt',
+                'Enchant Helm - Rune of Avoidance',
+                'Enchant Helm - Empowered Rune of Avoidance',
+                'Enchant Shoulders - Silvermoon\'s Mending',
+                'Enchant Shoulders - Thalassian Recovery',
+            ],
+            [CRAFTERS.Genianna]: [
+                'Enchant Boots - Lynx\'s Dexterity',
+                'Enchant Helm - Hex of Leeching',
+                'Enchant Helm - Empowered Hex of Leeching',
+                'Enchant Shoulders - Akil\'zon\'s Swiftness',
+                'Enchant Shoulders - Flight of the Eagle',
+            ],
+            [CRAFTERS.Mel]: [
+                'Enchant Boots - Shaldrassil\'s Roots',
+                'Enchant Helm - Blessing of Speed',
+                'Enchant Helm - Empowered Blessing of Speed',
+                'Enchant Shoulders - Amirdrassil\'s Grace',
+                'Enchant Shoulders - Nature\'s Grace',
+            ],
+            [CRAFTERS.Brand]: ['Enchant Chest - Mark of Nalorakk'],
+            [CRAFTERS.Annie]: ['Enchant Chest - Mark of the Magister'],
+            [CRAFTERS.Soraka]: ['Enchant Chest - Mark of the Rootwarden', 'Enchant Chest - Mark of the Worldsoul'],
+        },
+        [CATEGORIES.EnchantsRing]: {
+            [CRAFTERS.Brand]: ['Enchant Ring - Eyes of the Eagle', 'Enchant Ring - Zul\'jin\'s Mastery', 'Enchant Ring - Amani Mastery'],
+            [CRAFTERS.Annie]: [
+                'Enchant Ring - Silvermoon\'s Alacrity',
+                'Enchant Ring - Silvermoon\'s Tenacity',
+                'Enchant Ring - Thalassian Versatility',
+                'Enchant Ring - Thalassian Haste',
+            ],
+            [CRAFTERS.Soraka]: ['Enchant Ring - Nature\'s Fury', 'Enchant Ring - Nature\'s Wrath'],
+        },
+        [CATEGORIES.EnchantsWeapon]: {
+            [CRAFTERS.Brand]: ['Enchant Weapon - Berserker\'s Rage', 'Enchant Weapon - Jan\'alai\'s Precision', 'Enchant Weapon - Strength of Halazzi'],
+            [CRAFTERS.Annie]: ['Enchant Weapon - Acuity of the Ren\'dorei', 'Enchant Weapon - Arcane Mastery', 'Enchant Weapon - Flames of the Sin\'dorei'],
+            [CRAFTERS.Soraka]: ['Enchant Weapon - Worldsoul Aegis', 'Enchant Weapon - Worldsoul Cradle', 'Enchant Weapon - Worldsoul Tenacity'],
+        },
+        [CATEGORIES.EnchantsProfTool]: {
+            [CRAFTERS.Karma]: ['Enchant Tool - Amani Perception', 'Enchant Tool - Amani Resourcefulness'],
+            [CRAFTERS.Beveviam]: ['Enchant Tool - Haranir Finesse', 'Enchant Tool - Haranir Multicrafting'],
+            [CRAFTERS.Lissandra]: ['Enchant Tool - Ren\'dorei Ingenuity', 'Enchant Tool - Sin\'dorei Swiftness']
+        },
+        [CATEGORIES.WeaponOffhand]: {
             [CRAFTERS.Morgana]: ['Magister\'s Grand Focus', 'Thalassian Spellweaver\'s Wand']
         },
         [CATEGORIES.ProfessionEquipment]: {
@@ -370,6 +434,26 @@ const CRAFTING_MAP = {
         }
     },
     [PROFESSIONS.Engineering]: {
+        [CATEGORIES.ArmorCloth]: {
+            [CRAFTERS.Akali]: ['Aetherlume Eye Wrap', 'Quel\'dorei Cloth Goggles', 'Evercore Zoomshroud'],
+            [CRAFTERS.Arthas]: ['Aetherlume Silken Cuffs', 'Quel\'dorei Silken Cuffs', 'Evercore Wrist Latch'],
+            [CRAFTERS.Gwen]: ['Aetherlume Softsteppers', 'Quel\'dorei Softsteppers', 'Evercore Swiftfeet']
+        },
+        [CATEGORIES.ArmorLeather]: {
+            [CRAFTERS.Akali]: ['Aetherlume Optics', 'Quel\'dorei Leather Optics', 'Evercore Shade'],
+            [CRAFTERS.Arthas]: ['Aetherlume Bands', 'Quel\'dorei Bands', 'Evercore Binding'],
+            [CRAFTERS.Gwen]: ['Aetherlume Runners', 'Quel\'dorei Runners', 'Evercore Switchwraps']
+        },
+        [CATEGORIES.ArmorMail]: {
+            [CRAFTERS.Akali]: ['Aetherlume Vision Shroud', 'Quel\'dorei Mail Shroud', 'Evercore Reconissance'],
+            [CRAFTERS.Arthas]: ['Aetherlume Bracelets', 'Quel\'dorei Bracelets', 'Evercore Chainguards'],
+            [CRAFTERS.Gwen]: ['Aetherlume Clonkers', 'Quel\'dorei Clonkers', 'Evercore Turbochains']
+        },
+        [CATEGORIES.ArmorPlate]: {
+            [CRAFTERS.Akali]: ['Aetherlume Sun Guard', 'Quel\'dorei Visor', 'Evercore Vision Guard'],
+            [CRAFTERS.Arthas]: ['Aetherlume Guards', 'Quel\'dorei Guards', 'Evercore Gear Weight'],
+            [CRAFTERS.Gwen]: ['Aetherlume Stompers', 'Quel\'dorei Stompers', 'Evercore Greaseplates']
+        },
         [CATEGORIES.Consumable]: {
             [CRAFTERS.Nasus]: [
                 'Emergency Soul Link',
@@ -380,54 +464,6 @@ const CRAFTING_MAP = {
                 'Weighted Boomshots',
                 'M3DDY',
                 'W-47CH D0G',
-            ]
-        },
-        [CATEGORIES.Gear]: {
-            [CRAFTERS.Aatrox]: [
-                'P.0.W. x3',
-                'Evercore Dome Dinger',
-            ],
-            [CRAFTERS.Akali]: [
-                'Aetherlume Eye Wrap',
-                'Quel\'dorei Cloth Goggles',
-                'Evercore Zoomshroud',
-                'Aetherlume Optics',
-                'Quel\'dorei Leather Optics',
-                'Evercore Shade',
-                'Aetherlume Vision Shroud',
-                'Quel\'dorei Mail Shroud',
-                'Evercore Reconissance',
-                'Aetherlume Sun Guard',
-                'Quel\'dorei Visor',
-                'Evercore Vision Guard',
-            ],
-            [CRAFTERS.Arthas]: [
-                'Aetherlume Silken Cuffs',
-                'Quel\'dorei Silken Cuffs',
-                'Evercore Wrist Latch',
-                'Aetherlume Bands Cuffs',
-                'Quel\'dorei Bands',
-                'Evercore Binding',
-                'Aetherlume Bracelets',
-                'Quel\'dorei Bracelets',
-                'Evercore Chainguards',
-                'Aetherlume Guards',
-                'Quel\'dorei Guards',
-                'Evercore Gear Weight',
-            ],
-            [CRAFTERS.Gwen]: [
-                'Aetherlume Softsteppers',
-                'Quel\'dorei Softsteppers',
-                'Evercore Swiftfeet',
-                'Aetherlume Runners',
-                'Quel\'dorei Runners',
-                'Evercore Switchwraps',
-                'Aetherlume Clonkers',
-                'Quel\'dorei Clonkers',
-                'Evercore Turbochains',
-                'Aetherlume Stompers',
-                'Quel\'dorei Stompers',
-                'Evercore Greaseplates',
             ]
         },
         [CATEGORIES.ProfessionEquipment]: {
@@ -467,6 +503,9 @@ const CRAFTING_MAP = {
                 'B0P, Curator of Booms',
             ]
         },
+        [CATEGORIES.WeaponOffhand]: {
+            [CRAFTERS.Aatrox]: ['P.0.W. x3', 'Evercore Dome Dinger'],
+        },
     },
     [PROFESSIONS.Inscription]: {
         [CATEGORIES.Consumable]: {
@@ -491,7 +530,7 @@ const CRAFTING_MAP = {
                 'Contract: The Singularity',
             ]
         },
-        [CATEGORIES.Gear]: {
+        [CATEGORIES.WeaponOffhand]: {
             [CRAFTERS.Volibear]: [
                 'Aln\'hara Cane',
                 'Aln\'hara Pikestaff',
@@ -500,6 +539,8 @@ const CRAFTING_MAP = {
             ],
             [CRAFTERS.Ryze]: ['Aln\'hara Lantern', 'Faunatender\'s Lamp'],
             [CRAFTERS.Qiyana]: ['Aln\'hara Sprigshot', 'Faunatender\'s Trust'],
+        },
+        [CATEGORIES.GearOther]: {
             [CRAFTERS.Hotahumm]: ['Darkmoon Dominion: Blood'],
             [CRAFTERS.LeeSin]: ['Darkmoon Dominion: Hunt'],
             [CRAFTERS.Naafiri]: ['Darkmoon Dominion: Rot'],
@@ -535,7 +576,7 @@ const CRAFTING_MAP = {
         }
     },
     [PROFESSIONS.Jewelcrafting]: {
-        [CATEGORIES.Gear]: {
+        [CATEGORIES.GearOther]: {
             [CRAFTERS.Tyrianth]: [
                 'Loa Worshiper\'s Band',
                 'Masterwork Sin\'dorei Band',
@@ -628,7 +669,7 @@ const CRAFTING_MAP = {
             [CRAFTERS.Rengar]: ['Void-Touched Drums'],
             [CRAFTERS.Tyrianth]: ['Blood Knight\'s Armor Kit', 'Forest Hunter\'s Armor Kit', 'Thalassian Scout Armor Kit']
         },
-        [CATEGORIES.Gear]: {
+        [CATEGORIES.ArmorLeather]: {
             [CRAFTERS.Samira]: [
                 'Hexwoven Strand',
                 'Silvermoon Agent\'s Utility Belt',
@@ -654,6 +695,8 @@ const CRAFTING_MAP = {
             ],
             [CRAFTERS.RekSai]: ['Silvermoon Agent\'s Mantle', 'Smuggler\'s Reinforced Shoulderguards'],
             [CRAFTERS.Gwen]: ['Silvermoon Agent\'s Sneakers', 'World Tree Rootwraps', 'Smuggler\'s Leather Footpads'],
+        },
+        [CATEGORIES.ArmorMail]: {
             [CRAFTERS.Quinn]: [
                 'Axe-Flingin\' Bands',
                 'Farstrider\'s Plated Bracers',
@@ -727,15 +770,7 @@ const CRAFTING_MAP = {
         },
     },
     [PROFESSIONS.Tailoring]: {
-        [CATEGORIES.Bags]: {
-            [CRAFTERS.Soraka]: ['Sunfire Silk Backpack'],
-            [CRAFTERS.Mel]: ['Arcanoweave Reagent Rucksack'],
-            [CRAFTERS.Malzahar]: ['Imbued Bright Linen Backpack', 'Bright Linen Reagent Satchel'],
-        },
-        [CATEGORIES.Consumable]: {
-            [CRAFTERS.Malzahar]: ['Bright Linen Bandage'],
-        },
-        [CATEGORIES.Gear]: {
+        [CATEGORIES.ArmorCloth]: {
             [CRAFTERS.Lux]: [
                 'Adherent\'s Silken Shroud',
                 'Courtly Cloak',
@@ -781,7 +816,18 @@ const CRAFTING_MAP = {
                 'Sunfire Sash',
             ],
         },
-        [CATEGORIES.ProfessionEquipment]: {
+        [CATEGORIES.Bags]: {
+            [CRAFTERS.Soraka]: ['Sunfire Silk Backpack'],
+            [CRAFTERS.Mel]: ['Arcanoweave Reagent Rucksack'],
+            [CRAFTERS.Malzahar]: ['Imbued Bright Linen Backpack', 'Bright Linen Reagent Satchel'],
+        },
+        [CATEGORIES.Consumable]: {
+            [CRAFTERS.Malzahar]: ['Bright Linen Bandage'],
+        },
+        [CATEGORIES.EnchantsArmor]: {
+            [CRAFTERS.Mel]: ['Arcanoweave Spellthread'],
+            [CRAFTERS.Soraka]: ['Sunfire Silk Spellthread'],
+            [CRAFTERS.Malzahar]: ['Bright Linen Spellthread']
         },
         [CATEGORIES.Reagent]: {
             [CRAFTERS.Mel]: ['Arcanoweave Bolt', 'Arcanoweave Lining', 'Arcanoweave Spellthread'],
