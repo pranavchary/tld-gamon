@@ -1,7 +1,10 @@
-if (!process.env.NODE_ENV) require('dotenv').config();
-const { BOT_TOKEN, QUEST_IMPORTANT_ID, CRAFTING_DM_USER_ID, TLD_GUILD_ID } = process.env;
-const fs = require('node:fs');
-const path = require('node:path');
+if (!process.env.NODE_ENV) require("dotenv").config();
+
+const {
+	BOT_TOKEN, QUEST_IMPORTANT_ID, CRAFTING_DM_USER_ID, TLD_GUILD_ID,
+} = process.env;
+const fs = require("node:fs");
+const path = require("node:path");
 const {
 	Client,
 	Collection,
@@ -12,26 +15,26 @@ const {
 	ActionRowBuilder,
 	ButtonBuilder,
 	ButtonStyle,
-} = require('discord.js');
+} = require("discord.js");
 
 const {
 	CATEGORY_OPTIONS,
 	PROFESSION_OPTIONS,
-	CRAFTING_MAP
-} = require('./midnight-current/profession-constants');
+	CRAFTING_MAP,
+} = require("./midnight-current/profession-constants");
 // const { initializeCache } = require('./cache-service');
 
 // Initialize Discord Bot
 const bot = new Client({ intents: [GatewayIntentBits.Guilds] });
 bot.commands = new Collection();
-const commandsPath = path.join(__dirname, 'commands');
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+const commandsPath = path.join(__dirname, "commands");
+const commandFiles = fs.readdirSync(commandsPath).filter((file) => file.endsWith(".js"));
 
 for (const file of commandFiles) {
 	const filePath = path.join(commandsPath, file);
 	const command = require(filePath);
 	// Set a new item in the Collection with the key as the command name and the value as the exported module
-	if ('data' in command && 'execute' in command) {
+	if ("data" in command && "execute" in command) {
 		bot.commands.set(command.data.name, command);
 	} else {
 		console.warn(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
@@ -64,26 +67,26 @@ const getCraftingInstructions = (isTLDServer, appendedText) => {
 };
 
 // Execute when bot is ready to run
-bot.on('ready', () => {
-	console.info('[READY] I, Gamon, will save us!');
+bot.on("ready", () => {
+	console.info("[READY] I, Gamon, will save us!");
 });
 
 // Execute when bot encounters an error
-bot.on('error', (error) => {
-	console.info('[ERROR] I will not fall again!');
+bot.on("error", (error) => {
+	console.info("[ERROR] I will not fall again!");
 	console.error(error.stack);
 });
 
 // Execute when bot disconnects for any reason once live
-bot.on('disconnect', (...params) => {
-	console.warn('[DISCONNECT] It cannot end... like... this...');
+bot.on("disconnect", (...params) => {
+	console.warn("[DISCONNECT] It cannot end... like... this...");
 	console.warn(params);
 });
 
 // Chat command interaction handler
 bot.on(Events.InteractionCreate, async (interaction) => {
-    if (!interaction.isChatInputCommand()) return;
-    const command = interaction.client.commands.get(interaction.commandName);
+	if (!interaction.isChatInputCommand()) return;
+	const command = interaction.client.commands.get(interaction.commandName);
 
 	if (!command) {
 		console.error(`[ERROR] No command matching ${interaction.commandName} was found.`);
@@ -91,10 +94,10 @@ bot.on(Events.InteractionCreate, async (interaction) => {
 	}
 
 	// Crafting Interaction: Select Category
-	if (interaction.options.getSubcommand() === 'craft') {
+	if (interaction.options.getSubcommand() === "craft") {
 		const categories = new StringSelectMenuBuilder()
-			.setCustomId('category')
-			.setPlaceholder('What kind of item are you looking for?')
+			.setCustomId("category")
+			.setPlaceholder("What kind of item are you looking for?")
 			.addOptions(CATEGORY_OPTIONS);
 		const categoryRow = new ActionRowBuilder().addComponents(categories);
 
@@ -105,27 +108,25 @@ bot.on(Events.InteractionCreate, async (interaction) => {
 		} catch (error) {
 			console.error(error);
 			if (interaction.replied || interaction.deferred) {
-				await interaction.followUp({ content: 'I, Gamon, am confused as to what just happened...', flags: MessageFlags.Ephemeral });
+				await interaction.followUp({ content: "I, Gamon, am confused as to what just happened...", flags: MessageFlags.Ephemeral });
 			} else {
-				await interaction.reply({ content: 'I, Gamon, could not execute this command', flags: MessageFlags.Ephemeral });
+				await interaction.reply({ content: "I, Gamon, could not execute this command", flags: MessageFlags.Ephemeral });
 			}
 		}
 	}
-
 });
 
 // Crafting Interaction: Select Profession
 bot.on(Events.InteractionCreate, async (interaction) => {
 	if (!interaction.isStringSelectMenu()) return;
 
-	if (interaction.customId === 'category') {
+	if (interaction.customId === "category") {
 		const category = interaction.values[0];
 		craftSelectionMap.set(interaction.user.id, { category });
-		
+
 		const categoryRow = new ActionRowBuilder().addComponents(StringSelectMenuBuilder
 			.from(interaction.message.components[0].components[0])
-			.setOptions(interaction.message.components[0].components[0].options.map((opt) => ({ ...opt, default: opt.value === category })))
-		);
+			.setOptions(interaction.message.components[0].components[0].options.map((opt) => ({ ...opt, default: opt.value === category }))));
 
 		const availableProfs = Object.entries(CRAFTING_MAP).filter(([, cats]) => Object.keys(cats).includes(category)).map(([prof]) => prof);
 
@@ -134,16 +135,16 @@ bot.on(Events.InteractionCreate, async (interaction) => {
 			craftSelectionMap.set(interaction.user.id, { category, profession });
 
 			const crafts = new StringSelectMenuBuilder()
-				.setCustomId('item-search')
-				.setPlaceholder('Which of these items would you like?')
+				.setCustomId("item-search")
+				.setPlaceholder("Which of these items would you like?")
 				.addOptions(Object.values(CRAFTING_MAP[profession][category]).flatMap((item) => item).map((item) => ({ label: item, value: item })));
 			const craftsRow = new ActionRowBuilder().addComponents(crafts);
 
 			await interaction.update({ content: getCraftingInstructions(interaction.guildId === TLD_GUILD_ID), components: [categoryRow, craftsRow] });
 		} else {
 			const professions = new StringSelectMenuBuilder()
-				.setCustomId('profession')
-				.setPlaceholder('Which profession can craft the item you want?')
+				.setCustomId("profession")
+				.setPlaceholder("Which profession can craft the item you want?")
 				.addOptions(PROFESSION_OPTIONS.filter((prof) => availableProfs.includes(prof.value)));
 			const professionRow = new ActionRowBuilder().addComponents(professions);
 
@@ -154,24 +155,22 @@ bot.on(Events.InteractionCreate, async (interaction) => {
 
 // Crafting Interaction: Select Item
 bot.on(Events.InteractionCreate, async (interaction) => {
-	if (!interaction.isStringSelectMenu() || interaction.customId !== 'profession') return;
+	if (!interaction.isStringSelectMenu() || interaction.customId !== "profession") return;
 
-	const category = craftSelectionMap.get(interaction.user.id).category;
+	const { category } = craftSelectionMap.get(interaction.user.id);
 	const profession = interaction.values[0];
 	craftSelectionMap.set(interaction.user.id, { category, profession });
-	
+
 	const categoryRow = new ActionRowBuilder().addComponents(StringSelectMenuBuilder
 		.from(interaction.message.components[0].components[0])
-		.setOptions(interaction.message.components[0].components[0].options.map((opt) => ({ ...opt, default: opt.value === category })))
-	);
+		.setOptions(interaction.message.components[0].components[0].options.map((opt) => ({ ...opt, default: opt.value === category }))));
 	const professionRow = new ActionRowBuilder().addComponents(StringSelectMenuBuilder
 		.from(interaction.message.components[1].components[0])
-		.setOptions(interaction.message.components[1].components[0].options.map((opt) => ({ ...opt, default: opt.value === profession })))
-	);
+		.setOptions(interaction.message.components[1].components[0].options.map((opt) => ({ ...opt, default: opt.value === profession }))));
 
 	const crafts = new StringSelectMenuBuilder()
-		.setCustomId('item-search')
-		.setPlaceholder('Which of these items would you like?')
+		.setCustomId("item-search")
+		.setPlaceholder("Which of these items would you like?")
 		.addOptions(Object.values(CRAFTING_MAP[profession][category]).flatMap((item) => item).map((item) => ({ label: item, value: item })));
 	const craftsRow = new ActionRowBuilder().addComponents(crafts);
 
@@ -180,13 +179,13 @@ bot.on(Events.InteractionCreate, async (interaction) => {
 
 // Crafting Interaction: Confirm with DM
 bot.on(Events.InteractionCreate, async (interaction) => {
-	if (!interaction.isStringSelectMenu() || interaction.customId !== 'item-search') return;
+	if (!interaction.isStringSelectMenu() || interaction.customId !== "item-search") return;
 
-	const category = craftSelectionMap.get(interaction.user.id).category;
-	const profession = craftSelectionMap.get(interaction.user.id).profession;
+	const { category } = craftSelectionMap.get(interaction.user.id);
+	const { profession } = craftSelectionMap.get(interaction.user.id);
 	const item = interaction.values[0];
 	let crafter;
-	for (let toon in CRAFTING_MAP[profession][category]) {
+	for (const toon in CRAFTING_MAP[profession][category]) {
 		if (CRAFTING_MAP[profession][category][toon].includes(item)) {
 			crafter = toon;
 			break;
@@ -195,54 +194,58 @@ bot.on(Events.InteractionCreate, async (interaction) => {
 
 	if (!crafter) {
 		craftSelectionMap.delete(interaction.user.id);
-		await interaction.reply({ content: 'Gamon was not able to find you a suitable crafter... My humblest apologies.', flags: MessageFlags.Ephemeral });
+		await interaction.reply({ content: "Gamon was not able to find you a suitable crafter... My humblest apologies.", flags: MessageFlags.Ephemeral });
 		return;
 	}
 
-	craftSelectionMap.set(interaction.user.id, { category, profession, item, crafter });
+	craftSelectionMap.set(interaction.user.id, {
+		category, profession, item, crafter,
+	});
 
-	const professionPresented = interaction.message.components[1]?.components[0]?.customId === 'profession';
+	const professionPresented = interaction.message.components[1]?.components[0]?.customId === "profession";
 
 	const categoryRow = new ActionRowBuilder().addComponents(StringSelectMenuBuilder
 		.from(interaction.message.components[0].components[0])
-		.setOptions(interaction.message.components[0].components[0].options.map((opt) => ({ ...opt, default: opt.value === category })))
-	);
+		.setOptions(interaction.message.components[0].components[0].options.map((opt) => ({ ...opt, default: opt.value === category }))));
 	const professionRow = professionPresented ? new ActionRowBuilder().addComponents(StringSelectMenuBuilder
 		.from(interaction.message.components[1].components[0])
-		.setOptions(interaction.message.components[1].components[0].options.map((opt) => ({ ...opt, default: opt.value === profession })))
-	) : null;
+		.setOptions(interaction.message.components[1].components[0].options.map((opt) => ({ ...opt, default: opt.value === profession })))) : null;
 	const craftsIndex = professionPresented ? 2 : 1;
 	const craftsRow = new ActionRowBuilder().addComponents(StringSelectMenuBuilder
 		.from(interaction.message.components[craftsIndex].components[0])
-		.setOptions(interaction.message.components[craftsIndex].components[0].options.map((opt) => ({ ...opt, default: opt.value === item })))
-	);
+		.setOptions(interaction.message.components[craftsIndex].components[0].options.map((opt) => ({ ...opt, default: opt.value === item }))));
 
 	const craftingInstructionsAddon = `\n:clipboard: **Your Crafter:** *${crafter}*`;
 
 	const infoButton = new ButtonBuilder()
-		.setCustomId('craft-info')
-		.setLabel('Copy crafter\'s name from above & confirm AFTER order is placed')
+		.setCustomId("craft-info")
+		.setLabel("Copy crafter's name from above & confirm AFTER order is placed")
 		.setStyle(ButtonStyle.Secondary)
 		.setDisabled(true);
-	
+
 	const confirmButton = new ButtonBuilder()
-		.setCustomId('craft-confirm')
-		.setLabel('Confirm')
+		.setCustomId("craft-confirm")
+		.setLabel("Confirm")
 		.setStyle(ButtonStyle.Success);
-	
+
 	const confirmRow = new ActionRowBuilder().addComponents(infoButton, confirmButton);
 
-	const components = [categoryRow, professionRow, craftsRow, confirmRow].filter(Boolean);
+	const components = [
+		categoryRow,
+		professionRow,
+		craftsRow,
+		confirmRow,
+	].filter(Boolean);
 	await interaction.update({ content: getCraftingInstructions(interaction.guildId === TLD_GUILD_ID, craftingInstructionsAddon), components });
 });
 
 bot.on(Events.InteractionCreate, async (interaction) => {
-	if (!interaction.isButton() || interaction.customId !== 'craft-confirm') return;
+	if (!interaction.isButton() || interaction.customId !== "craft-confirm") return;
 	const {
 		item,
-		crafter
+		crafter,
 	} = craftSelectionMap.get(interaction.user.id);
-	
+
 	try {
 		const userToMessage = await bot.users.fetch(CRAFTING_DM_USER_ID);
 		const message = `
