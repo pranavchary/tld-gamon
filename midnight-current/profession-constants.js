@@ -269,6 +269,7 @@ const CRAFTING_MAP = {
 				"Dawnforged Long Blade",
 				"Dawnforged Edge",
 				"Dawnforged Ritual Knife",
+				"Spellbreaker's Warglaive",
 			],
 			[CRAFTERS.Aatrox]: [
 				"Blood Knight's Impetus",
