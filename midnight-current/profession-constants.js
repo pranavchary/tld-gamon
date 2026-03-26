@@ -270,6 +270,7 @@ const CRAFTING_MAP = {
 				"Dawnforged Edge",
 				"Dawnforged Ritual Knife",
 				"Spellbreaker's Warglaive",
+				"Spellbreaker's Blade",
 			],
 			[CRAFTERS.Aatrox]: [
 				"Blood Knight's Impetus",
@@ -281,6 +282,7 @@ const CRAFTING_MAP = {
 				"Dawnforged War Mace",
 				"Dawnforged Splitter",
 				"Primalforged Heavy Axe",
+				"Spellbreaker's Ultimatum",
 			],
 			[CRAFTERS.Leona]: ["Knight-Commander's Palisade", "Blood-Tempered Bulwark"],
 		},

@@ -26,7 +26,7 @@ module.exports = {
 		"array-element-newline": ["error", { multiline: true, minItems: 4 }],
 		indent: ["error", "tab"],
 		"no-tabs": "off",
-		"max-len": ["warn", { code: 120 }],
+		"max-len": ["warn", { code: 140 }],
 		semi: ["error", "always"],
 		"semi-style": ["error", "last"],
 		"eol-last": ["error", "always"],
