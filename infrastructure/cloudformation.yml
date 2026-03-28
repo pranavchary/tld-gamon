@@ -13,14 +13,81 @@ Parameters:
     Type: String
     Default: tld-gamon
     Description: GitHub repository name
-  SubnetIds:
-    Type: List<AWS::EC2::Subnet::Id>
-    Description: Public subnet IDs in the default VPC for the ECS service
-  VpcId:
-    Type: AWS::EC2::VPC::Id
-    Description: VPC ID (use default VPC)
-
 Resources:
+  # Networking
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/24
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: tld-gamon
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: tld-gamon
+
+  VPCGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: tld-gamon-public
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: VPCGatewayAttachment
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PublicSubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.0.0/25
+      AvailabilityZone: !Select [0, !GetAZs '']
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: tld-gamon-public-a
+
+  PublicSubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.0.128/25
+      AvailabilityZone: !Select [1, !GetAZs '']
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: tld-gamon-public-b
+
+  SubnetARouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnetA
+      RouteTableId: !Ref PublicRouteTable
+
+  SubnetBRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnetB
+      RouteTableId: !Ref PublicRouteTable
+
   # ECR Repository
   ECRRepository:
     Type: AWS::ECR::Repository
@@ -73,7 +140,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Security group for tld-gamon ECS task - outbound only
-      VpcId: !Ref VpcId
+      VpcId: !Ref VPC
       SecurityGroupEgress:
         - IpProtocol: -1
           CidrIp: 0.0.0.0/0
@@ -248,7 +315,9 @@ Resources:
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
-          Subnets: !Ref SubnetIds
+          Subnets:
+            - !Ref PublicSubnetA
+            - !Ref PublicSubnetB
           SecurityGroups:
             - !Ref ECSSecurityGroup
       DeploymentConfiguration:
@@ -271,3 +340,6 @@ Outputs:
   LogGroupName:
     Description: CloudWatch log group for container logs
     Value: !Ref LogGroup
+  VpcId:
+    Description: VPC ID for the tld-gamon infrastructure
+    Value: !Ref VPC
