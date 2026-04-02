@@ -1,12 +1,12 @@
 const DUNGEON_SHORTNAME_MAP = {
-    AD: 'Atal\'Dazar',
-    BRH: 'Black Rook Hold',
-    DHT: 'Darkheart Thicket',
-    EB: 'Everbloom',
-    FALL: 'Galakrond\'s Fall',
-    RISE: 'Murozond\'s Rise',
-    TOTT: 'Throne of the Tides',
-    WM: 'Waycrest Manor',
+	AD: "Atal'Dazar",
+	BRH: "Black Rook Hold",
+	DHT: "Darkheart Thicket",
+	EB: "Everbloom",
+	FALL: "Galakrond's Fall",
+	RISE: "Murozond's Rise",
+	TOTT: "Throne of the Tides",
+	WM: "Waycrest Manor",
 };
 const BASE_SCORE_LEVEL = 7.5;
 const BASE_SCORE_COMPLETION = 37.5;
@@ -16,8 +16,8 @@ const BASE_SCORE_COMPLETION = 37.5;
  * @returns A version of the provided text with the first letter capitalized and the remaining letters in lowercase
  */
 const capitalizeText = (text) => {
-    if (!text) return '';
-    return text.charAt(0).toUpperCase() + text.substring(1).toLowerCase();
+	if (!text) return "";
+	return text.charAt(0).toUpperCase() + text.substring(1).toLowerCase();
 };
 
 /**
@@ -33,9 +33,9 @@ const sanitizeNumber = (num) => +(num.toFixed(1));
  * @returns Number of affixes that will appear
  */
 const getAffixCountByKeyLevel = (keyLevel) => {
-    if (keyLevel >= 14) return 3;
-    if (keyLevel >= 7) return 2;
-    return 1;
+	if (keyLevel >= 14) return 3;
+	if (keyLevel >= 7) return 2;
+	return 1;
 };
 
 /**
@@ -50,17 +50,17 @@ const getBaseScoreForKeyLevel = (keyLevel) => BASE_SCORE_LEVEL * keyLevel;
  * @returns Score for completing a Mythic+ dungeon with the given number of affixes within the time limit
  */
 const getBaseScoreForAffixCount = (affixCount) => {
-    let score = 0;
+	let score = 0;
 
-    for (let i = 0; i < affixCount; i++) {
-        if (i === 0) {
-            score += BASE_SCORE_LEVEL;
-        } else {
-            score += BASE_SCORE_LEVEL * 2;
-        }
-    }
+	for (let i = 0; i < affixCount; i++) {
+		if (i === 0) {
+			score += BASE_SCORE_LEVEL;
+		} else {
+			score += BASE_SCORE_LEVEL * 2;
+		}
+	}
 
-    return score;
+	return score;
 };
 
 /**
@@ -69,36 +69,36 @@ const getBaseScoreForAffixCount = (affixCount) => {
  * @returns An object containing the dungeon score and weighted ratings for best and alternate runs for a completed Mythic+ dungeon
  */
 const getDungeonRating = (keyLevel) => {
-    const affixCount = getAffixCountByKeyLevel(keyLevel);
-    let extraScore = 0;
-    if (keyLevel > 10) {
-        extraScore = (keyLevel - 10) * 3;
-    }
+	const affixCount = getAffixCountByKeyLevel(keyLevel);
+	let extraScore = 0;
+	if (keyLevel > 10) {
+		extraScore = (keyLevel - 10) * 3;
+	}
 
-    const bestRating = sanitizeNumber(BASE_SCORE_COMPLETION + getBaseScoreForKeyLevel(keyLevel) + getBaseScoreForAffixCount(affixCount) + extraScore);
-    return { bestRating, altRating: sanitizeNumber(bestRating / 3), score: sanitizeNumber(bestRating / 1.5) };
+	const bestRating = sanitizeNumber(BASE_SCORE_COMPLETION + getBaseScoreForKeyLevel(keyLevel) + getBaseScoreForAffixCount(affixCount) + extraScore);
+	return { bestRating, altRating: sanitizeNumber(bestRating / 3), score: sanitizeNumber(bestRating / 1.5) };
 };
 
 /* @todo Check if this method can/should be used anywhere */
 const getTargetKeystoneLevel = (highestRunDungeon, currentDungeon) => {
-    const levelDiff = highestRunDungeon.mythic_level - currentDungeon.mythic_level;
-    let targetLevel = highestRunDungeon.mythic_level;
+	const levelDiff = highestRunDungeon.mythic_level - currentDungeon.mythic_level;
+	let targetLevel = highestRunDungeon.mythic_level;
 
-    if (levelDiff <= 3 && highestRunDungeon.num_keystone_upgrades === 0 && currentDungeon.num_keystone_upgrades >= 0) {
-        targetLevel += currentDungeon.num_keystone_upgrades - levelDiff;
-    } else if (highestRunDungeon.num_keystone_upgrades === 0 && highestRunDungeon.name === currentDungeon.name) {
-        targetLevel -= 1;
-    } else {
-        targetLevel += highestRunDungeon.num_keystone_upgrades - levelDiff;
-    }
+	if (levelDiff <= 3 && highestRunDungeon.num_keystone_upgrades === 0 && currentDungeon.num_keystone_upgrades >= 0) {
+		targetLevel += currentDungeon.num_keystone_upgrades - levelDiff;
+	} else if (highestRunDungeon.num_keystone_upgrades === 0 && highestRunDungeon.name === currentDungeon.name) {
+		targetLevel -= 1;
+	} else {
+		targetLevel += highestRunDungeon.num_keystone_upgrades - levelDiff;
+	}
 
-    return targetLevel;
+	return targetLevel;
 };
 
 module.exports = {
-    DUNGEON_SHORTNAME_MAP,
-    capitalizeText,
-    sanitizeNumber,
-    getDungeonRating,
-    getTargetKeystoneLevel,
+	DUNGEON_SHORTNAME_MAP,
+	capitalizeText,
+	sanitizeNumber,
+	getDungeonRating,
+	getTargetKeystoneLevel,
 };
