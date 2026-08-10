@@ -55,7 +55,8 @@ const capitalizeText = (text) => {
 
 /**
  * Used to eliminate floating point arithmetic issues that frequently occur in JavaScript
- * @param {number} num The number to sanitize. Can be a single number, a single math operation, or a series of operations that results in a number output
+ * @param {number} num The number to sanitize.
+ * Can be a single number, a single math operation, or a series of operations that results in a number output.
  * @returns The number provided fixed to a single decimal point
  */
 const sanitizeNumber = (num) => +(num.toFixed(1));

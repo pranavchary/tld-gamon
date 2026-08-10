@@ -9,10 +9,11 @@ module.exports = {
 		requireConfigFile: false,
 		ecmaVersion: 2023,
 	},
+	ignorePatterns: ["legacy/", "**/profession-constants.js"],
 	rules: {
 		quotes: ["error", "double", { avoidEscape: true }],
 		"comma-dangle": ["error", "always-multiline"],
-		// Objects/arrays with 4+ properties/elements must be multiline;
+		// Objects/arrays with 4+ properties/elements must be multiline
 		"object-curly-newline": [
 			"error",
 			{
@@ -32,5 +33,9 @@ module.exports = {
 		"eol-last": ["error", "always"],
 		"global-require": ["off"],
 		"no-plusplus": ["off"],
+		"no-restricted-syntax": ["off"],
+		"import/no-dynamic-require": ["warn"],
+		"no-continue": ["off"],
+		"no-labels": ["off"],
 	},
 };

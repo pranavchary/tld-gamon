@@ -1,5 +1,5 @@
-const { MessageFlags } = require("discord.js");
-const { EmbedBuilder } = require("@discordjs/builders");
+/* eslint-disable camelcase */
+const { MessageFlags, EmbedBuilder } = require("discord.js");
 const { default: axios } = require("axios");
 const {
 	DUNGEON_SHORTNAME_MAP,
@@ -10,7 +10,8 @@ const {
 const { SPEC_SHORTNAME_MAP } = require("../constants");
 
 /**
- * Checks Raider.io Mythic+ data for any missing dungeons and populates the `mythic_plus_best_runs` array with enough data to continue operations.
+ * Checks Raider.io Mythic+ data for any missing dungeons and populates the `mythic_plus_best_runs`
+ * array with enough data to continue operations.
  * @param {*} rioData Data retrieved from Raider.io
  * @param {number} keyLevel Mythic+ keystone level
  * @returns Fully populated Raider.io data object without missing dungeons in the event that none have been completed for a character
@@ -78,7 +79,7 @@ const requestRaiderIoData = async (qp) => {
 /**
  * @param {*} rioData Data retrieved from Raider.io
  * @param {number} keyLevel Mythic+ keystone level
- * @returns Simulation output for completing each Mythic+ dungeon on both Tyrannical and Fortified at the given keystone level within the time limit
+ * @returns Simulation output for completing each Mythic+ dungeon at the given keystone level within the time limit
  */
 const simulateLevel = (rioData, keyLevel) => {
 	const data = populateMissingDungeonData(rioData, keyLevel);
@@ -123,7 +124,8 @@ const simulateLevel = (rioData, keyLevel) => {
 /**
  * Used by {@link postMythicPlusEmbedMessage}
  * @param {*[]} dungeons An array of dungeon objects to sort
- * @param {string} sortMethod The method by which to sort the array of dungeons (defaults to `'increase'`, which sorts them from greatest rating increase to least)
+  * @param {string} sortMethod The method by which to sort the array of dungeons.
+ * Defaults to `'increase'`, which sorts them from greatest rating increase to least
  * @returns Sorted array of the given dungeons
  */
 const getSortedCleanedDungeons = (dungeons, sortMethod = "increase") => {
@@ -178,7 +180,8 @@ const getPushData = (rioData) => {
 			dungeon.level = run.mythic_level;
 			dungeon.rating = getDungeonRating(dungeon.level, timerPercForOneUpgrade);
 		} else if (run.mythic_level < maxKeyLevelTimed) {
-			// If the best run is not at least the same key level as the highest timed key, this dungeon should be completed at that key level
+			// If the best run is not at least the same key level as the highest timed key,
+			// this dungeon should be completed at that key level
 			dungeon.level = maxKeyLevelTimed;
 			dungeon.rating = getDungeonRating(dungeon.level, timerPercForOneUpgrade);
 		} else {
@@ -200,7 +203,8 @@ const getPushData = (rioData) => {
 };
 
 /**
- * @param {*} pushData Calculated output for which Mythic+ dungeons a character can reasonably complete to increase their rating (output of {@link getPushData})
+ * @param {*} pushData Calculated output for which Mythic+ dungeons a character can reasonably complete
+ * to increase their rating (output of {@link getPushData})
  * @param {*} rioData Data retrieved from Raider.io
  * @param {number} goal The Mythic+ rating a character wants to achieve
  * @returns Calculated output for which Mythic+ dungeons a character can reasonably complete to reach their goal Mythic+ rating
@@ -210,8 +214,10 @@ const getGoalData = (pushData, rioData, goal) => {
 	const { mythic_plus_scores_by_season: [{ scores: { all: startingRating } }] } = rioData;
 	let runningTotal = startingRating;
 	const dungeonsToRun = [];
-	// First, sort the list of dungeons from pushData in descending order by potential rating increase
-	// Then, add each dungeon object to the dungeonsToRun array as is to see if the goal rating can be reached by any subset of the recommended push data
+	/** First, sort the list of dungeons from pushData in descending order by potential rating increase
+	 * Then, add each dungeon object to the dungeonsToRun array as is to see if the goal rating can be reached by
+	 * any subset of the recommended push data
+	*/
 	pushDungeons.sort((a, b) => b.potentialIncrease - a.potentialIncrease).every((d) => {
 		dungeonsToRun.push(d);
 		runningTotal += d.potentialIncrease;
@@ -245,12 +251,13 @@ const getGoalData = (pushData, rioData, goal) => {
 };
 
 /**
- * Dynamically creates and posts a Discord embed message in response to a user executing one of the `/gamon` subcommands provided there is data to be shown
+ * Dynamically creates and posts a Discord embed message in response to a user executing
+ * one of the `/gamon` subcommands provided there is data to be shown
  * @param {*} calcData Calculated data for the given subcommand that should be presented to the user
  * @param {*} rioData Data retrieved from Raider.io
  * @param {*} interaction Discord.js bot interaction object containing information about user input and methods to respond to the user with
- * @returns A `Promise` containing the response to be shown to the user. If there is data to present, this will be in the form of a Discord embed, otherwise a plain message
- * indicating that there is no data to show will appear
+ * @returns {Promise} A `Promise` containing the response to be shown to the user. If there is data to present,
+ * this will be in the form of a Discord embed. Otherwise a plain message indicating that there is no data to show will appear.
  */
 const postMythicPlusEmbedMessage = (calcData, rioData, interaction) => {
 	const {
@@ -272,8 +279,10 @@ const postMythicPlusEmbedMessage = (calcData, rioData, interaction) => {
 
 	switch (subcommand) {
 	case "simulate":
-		noDungeonsText = `${name} won't get any rating increase from keys at **Mythic level ${interaction.options.getNumber("level")}**. Try simulating a higher key level.`;
-		description += `Here's how your Mythic+ rating could increase by completing the following keys at **Mythic level ${interaction.options.getNumber("level")}** within the time limit:`;
+		noDungeonsText = `${name} won't get any rating increase from keys at **Mythic level ${interaction.options.getNumber("level")}**. `;
+		noDungeonsText += "Try simulating a higher key level.";
+		description += "Here's how your Mythic+ rating could increase by completing the following keys at ";
+		description += `**Mythic level ${interaction.options.getNumber("level")}** within the time limit:`;
 		sortMethod = interaction.options.getBoolean("alphabetical") ? "alphabetical" : undefined;
 		closingLine = `Simulated Mythic+ rating after completing these dungeons: **${Math.floor(calcData.totalRating)}**`;
 		break;
@@ -290,7 +299,10 @@ const postMythicPlusEmbedMessage = (calcData, rioData, interaction) => {
 		closingLine = `Estimated Mythic+ rating after completing these dungeons: **${Math.floor(calcData.totalRating)}**`;
 		break;
 	default:
-		return Promise.resolve(interaction.reply({ content: "I don't understand that command... Try again", flags: MessageFlags.Ephemeral }));
+		return Promise.resolve(interaction.reply({
+			content: "I don't understand that command... Try again",
+			flags: MessageFlags.Ephemeral,
+		}));
 	}
 
 	const dungeonList = getSortedCleanedDungeons(calcData.dungeons, sortMethod);
@@ -306,10 +318,17 @@ const postMythicPlusEmbedMessage = (calcData, rioData, interaction) => {
 			{ name: "Current Mythic+ Rating", value: Math.floor(currentRating).toString(), inline: true },
 			{ name: " ", value: " " },
 		)
-		.setFooter({ iconURL: "https://cdn.raiderio.net/images/brand/Icon_2ColorWhite.png", text: "Click your character's name to view its Raider.io profile" });
+		.setFooter({
+			iconURL: "https://cdn.raiderio.net/images/brand/Icon_2ColorWhite.png",
+			text: "Click your character's name to view its Raider.io profile",
+		});
 
 	dungeonList.forEach((d) => {
-		embed.addFields({ name: `${d.name} +${d.level}`, value: `${Math.floor(d.potentialIncrease)} pt${d.potentialIncrease === 1 ? "" : "s"}`, inline: true });
+		embed.addFields({
+			name: `${d.name} +${d.level}`,
+			value: `${Math.floor(d.potentialIncrease)} pt${d.potentialIncrease === 1 ? "" : "s"}`,
+			inline: true,
+		});
 	});
 
 	if (dungeonList.length > 0) {
@@ -333,7 +352,10 @@ const calculateData = async (interaction) => {
 	const response = await requestRaiderIoData(qp);
 	if (response.response?.data?.error) {
 		console.error(response.request);
-		await interaction.reply({ content: `Couldn't retrieve data for **${qp.name} - ${qp.realm}**. Please try again.`, flags: MessageFlags.Ephemeral });
+		await interaction.reply({
+			content: `Couldn't retrieve data for **${qp.name} - ${qp.realm}**. Please try again.`,
+			flags: MessageFlags.Ephemeral,
+		});
 		return;
 	}
 
@@ -351,10 +373,9 @@ const calculateData = async (interaction) => {
 				mythic_plus_scores_by_season: [{ scores: { all: currentRating } }],
 			} = data;
 			if (currentRating >= interaction.options.getNumber("rating")) {
-				await interaction.reply({
-					content: `${name}'s current Mythic+ rating (${Math.floor(currentRating)}) is higher than/equal to the goal of ${interaction.options.getNumber("rating")}`,
-					flags: MessageFlags.Ephemeral,
-				});
+				let content = `${name}'s current Mythic+ rating (${Math.floor(currentRating)}) is higher than/equal to `;
+				content += `the goal of ${interaction.options.getNumber("rating")}`;
+				await interaction.reply({ content, flags: MessageFlags.Ephemeral });
 				return;
 			}
 			const goalData = getGoalData(pushData, data, interaction.options.getNumber("rating"));

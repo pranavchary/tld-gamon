@@ -8,7 +8,7 @@ const {
 	sanitizeNumber,
 	getDungeonRating,
 } = require("./helpers");
-const { SPEC_SHORTNAME_MAP } = require("../constants");
+const { SPEC_SHORTNAME_MAP } = require("../../constants");
 
 /**
  * Checks Raider.io Mythic+ data for any missing dungeons and populates the `mythic_plus_best_runs` array with enough data to continue operations.

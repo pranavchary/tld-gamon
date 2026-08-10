@@ -1,8 +1,7 @@
 if (!process.env.NODE_ENV) require("dotenv").config();
 
 const { TLD_GUILD_ID } = process.env;
-const { MessageFlags } = require("discord.js");
-const { SlashCommandBuilder } = require("@discordjs/builders");
+const { MessageFlags, SlashCommandBuilder } = require("discord.js");
 const { calculateData } = require("../midnight-current/commands");
 const {
 	SAY_QUOTES, SHOUT_QUOTES, BUTT_QUOTES, KEY_LEVEL_TOO_HIGH_QUOTES, SHOUT_QUOTES_TLD,
@@ -19,29 +18,48 @@ module.exports = {
 		*/
 		.addSubcommand((sc) => sc.setName("simulate")
 			.setDescription("Simulate running all keys at a given keystone level")
-			.addStringOption((opt) => opt.setName("character").setDescription("Character to fetch Mythic+ data for").setRequired(true).setMinLength(2)
+			.addStringOption((opt) => opt.setName("character")
+				.setDescription("Character to fetch Mythic+ data for")
+				.setRequired(true)
+				.setMinLength(2)
 				.setMaxLength(12))
-			.addNumberOption((opt) => opt.setName("level").setDescription("Keystone level to simulate running all dungeons at").setRequired(true).setMinValue(2))
-			.addStringOption((opt) => opt.setName("realm").setDescription("Realm a character is on *(if one is not provided, this bot will search for characters on Thrall)*"))
+			.addNumberOption((opt) => opt.setName("level")
+				.setDescription("Keystone level to simulate running all dungeons at")
+				.setRequired(true)
+				.setMinValue(2))
+			.addStringOption((opt) => opt.setName("realm")
+				.setDescription("Realm a character is on *(if one is not provided, this bot will search for characters on Thrall)*"))
 			.addBooleanOption((opt) => opt.setName("alphabetical").setDescription("Whether to sort dungeons alphabetically or not")))
 		.addSubcommand((sc) => sc.setName("push")
 			.setDescription("Find which dungeons you can complete with relative ease with to gain some Mythic+ rating")
-			.addStringOption((opt) => opt.setName("character").setDescription("Character to fetch Mythic+ data for").setRequired(true).setMinLength(2)
+			.addStringOption((opt) => opt.setName("character")
+				.setDescription("Character to fetch Mythic+ data for")
+				.setRequired(true)
+				.setMinLength(2)
 				.setMaxLength(12))
-			.addStringOption((opt) => opt.setName("realm").setDescription("Realm a character is on *(if one is not provided, this bot will search for characters on Thrall)*"))
+			.addStringOption((opt) => opt.setName("realm")
+				.setDescription("Realm a character is on *(if one is not provided, this bot will search for characters on Thrall)*"))
 			.addBooleanOption((opt) => opt.setName("alphabetical").setDescription("Whether to sort dungeons alphabetically or not")))
 		.addSubcommand((sc) => sc.setName("goal")
 			.setDescription("Learn how you could reach a goal rating (assumes all runs increase key level by 1)")
-			.addStringOption((opt) => opt.setName("character").setDescription("Character to fetch Mythic+ data for").setRequired(true).setMinLength(2)
+			.addStringOption((opt) => opt.setName("character")
+				.setDescription("Character to fetch Mythic+ data for")
+				.setRequired(true)
+				.setMinLength(2)
 				.setMaxLength(12))
-			.addNumberOption((opt) => opt.setName("rating").setDescription("The Mythic+ rating you would like to reach").setRequired(true).setMinValue(1))
-			.addStringOption((opt) => opt.setName("realm").setDescription("Realm a character is on *(if one is not provided, this bot will search for characters on Thrall)*"))
+			.addNumberOption((opt) => opt.setName("rating")
+				.setDescription("The Mythic+ rating you would like to reach")
+				.setRequired(true)
+				.setMinValue(1))
+			.addStringOption((opt) => opt.setName("realm")
+				.setDescription("Realm a character is on *(if one is not provided, this bot will search for characters on Thrall)*"))
 			.addStringOption((opt) => opt.setName("sort").setDescription("How you want to sort the list of dungeons").addChoices(
 				{ name: "alphabetical", value: "alphabetical" },
 				{ name: "level", value: "level" },
 			)))
 		.addSubcommand((sc) => sc.setName("says").setDescription("The Hero of Orgrimmar will whisper sweet nothings into your ear"))
-		.addSubcommand((sc) => sc.setName("shouts").setDescription("Inspire the entire channel with a rallying cry! But we all know which quote you're looking for..."))
+		.addSubcommand((sc) => sc.setName("shouts")
+			.setDescription("Inspire the entire channel with a rallying cry! But we all know which quote you're looking for..."))
 		.addSubcommand((sc) => sc.setName("butts").setDescription("Do it... I dare you...")),
 	async execute(interaction) {
 		const server = interaction.guildId;
@@ -79,10 +97,9 @@ module.exports = {
 				await calculateData(interaction);
 			} catch (e) {
 				console.error(e);
-				await interaction.reply({
-					content: "An error occurred while fetching your results. This could be an issue with Raider.io or with Discord itself. Please DM Pran or Tusk what you were trying to do when this happened, or try again in a few moments.",
-					flags: MessageFlags.Ephemeral,
-				});
+				let content = "An error occurred while fetching your results. This could be an issue with Raider.io or with Discord itself. ";
+				content += "Please DM Pran what you were trying to do when this happened, or try again in a few moments.";
+				await interaction.reply({ content, flags: MessageFlags.Ephemeral });
 			}
 		}
 	},

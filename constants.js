@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 if (!process.env.NODE_ENV) require("dotenv").config();
 
 const { env: { GAMON_SHOUT_ID, STORM_BOLT_ID, GOREHOWL_ID } } = process;
