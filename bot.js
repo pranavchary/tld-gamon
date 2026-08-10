@@ -18,11 +18,10 @@ const {
 } = require("discord.js");
 
 const {
-	CATEGORY_OPTIONS,
+	// CATEGORY_OPTIONS - crafting orders have been retired as a Gamon capability since Midnight S2 (patch 12.1.0)
 	PROFESSION_OPTIONS,
 	CRAFTING_MAP,
 } = require("./midnight-current/profession-constants");
-// const { initializeCache } = require('./cache-service');
 
 // Initialize Discord Bot
 const bot = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -40,9 +39,6 @@ for (const file of commandFiles) {
 		console.warn(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
 	}
 }
-
-// Initialize data cache
-// initializeCache();
 
 const craftSelectionMap = new Map();
 const getCraftingInstructions = (isTLDServer, appendedText) => {
@@ -93,15 +89,12 @@ bot.on(Events.InteractionCreate, async (interaction) => {
 		return;
 	}
 
-	// Crafting Interaction: Select Category
+	// Crafting orders retired. Guard stale `/gamon craft` invocations (in case command deployment doesn't work as intended).
 	if (interaction.options.getSubcommand() === "craft") {
-		const categories = new StringSelectMenuBuilder()
-			.setCustomId("category")
-			.setPlaceholder("What kind of item are you looking for?")
-			.addOptions(CATEGORY_OPTIONS);
-		const categoryRow = new ActionRowBuilder().addComponents(categories);
-
-		await interaction.reply({ content: getCraftingInstructions(interaction.guildId === TLD_GUILD_ID), components: [categoryRow], flags: MessageFlags.Ephemeral });
+		await interaction.reply({
+			content: "Gamon no longer takes crafting orders, friend. Reach out to Magni instead.",
+			flags: MessageFlags.Ephemeral,
+		});
 	} else {
 		try {
 			await command.execute(interaction);

@@ -8,7 +8,6 @@ const {
 	getDungeonRating,
 } = require("./helpers");
 const { SPEC_SHORTNAME_MAP } = require("../constants");
-// const { setCache, getCache } = require('../cache-service');
 
 /**
  * Checks Raider.io Mythic+ data for any missing dungeons and populates the `mythic_plus_best_runs` array with enough data to continue operations.

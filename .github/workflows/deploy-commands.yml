@@ -1,0 +1,22 @@
+name: Deploy slash commands
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy-commands:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run cmds
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          BOT_CLIENT_ID: ${{ secrets.BOT_CLIENT_ID }}

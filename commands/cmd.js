@@ -14,7 +14,9 @@ module.exports = {
 		.setName("gamon")
 		.setDescription("Find the dungeons you need to improve your mythic rating!")
 		.addSubcommand((sc) => sc.setName("help").setDescription("Learn what Gamon can do for you"))
+		/** Crafting orders retired — subcommand unregistered to disable the feature
 		.addSubcommand((sc) => sc.setName("craft").setDescription("Quickly find one of Tyrianth's characters to fill your crafting orders"))
+		*/
 		.addSubcommand((sc) => sc.setName("simulate")
 			.setDescription("Simulate running all keys at a given keystone level")
 			.addStringOption((opt) => opt.setName("character").setDescription("Character to fetch Mythic+ data for").setRequired(true).setMinLength(2)
@@ -46,7 +48,6 @@ module.exports = {
 		const subcommand = interaction.options.getSubcommand();
 		if (subcommand === "help") {
 			const content = "### *I, Gamon, will save us!*\n\nGamon can provide information about completing Mythic+ dungeons at specific keystone levels (up to level 20) and how that might impact a character's Mythic+ rating.\n"
-                + "- `/gamon craft` will help you find which of Tyrianth's characters to place crafting orders with :new:\n"
                 + "- `/gamon simulate` will simulate a character running all Mythic+ dungeons at a single keystone level\n"
                 + "- `/gamon push` will tell which dungeons a character could run to slightly improve their Mythic+ rating\n"
                 + "- `/gamon goal` will provide a plan for dungeons a character can complete to reach a goal Mythic+ rating\n"
