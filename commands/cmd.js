@@ -1,10 +1,9 @@
 if (!process.env.NODE_ENV) require("dotenv").config();
 
-const { TLD_GUILD_ID } = process.env;
 const { MessageFlags, SlashCommandBuilder } = require("discord.js");
 const { calculateData } = require("../midnight-current/commands");
 const {
-	SAY_QUOTES, SHOUT_QUOTES, BUTT_QUOTES, KEY_LEVEL_TOO_HIGH_QUOTES, SHOUT_QUOTES_TLD,
+	SAY_QUOTES, SHOUT_QUOTES, BUTT_QUOTES, KEY_LEVEL_TOO_HIGH_QUOTES,
 } = require("../constants");
 const { MAX_KEY_LEVEL_AVAILABLE } = require("../midnight-current/helpers");
 
@@ -62,10 +61,9 @@ module.exports = {
 			.setDescription("Inspire the entire channel with a rallying cry! But we all know which quote you're looking for..."))
 		.addSubcommand((sc) => sc.setName("butts").setDescription("Do it... I dare you...")),
 	async execute(interaction) {
-		const server = interaction.guildId;
 		const subcommand = interaction.options.getSubcommand();
 		if (subcommand === "help") {
-			const content = "### *I, Gamon, will save us!*\n\nGamon can provide information about completing Mythic+ dungeons at specific keystone levels (up to level 20) and how that might impact a character's Mythic+ rating.\n"
+			const content = `### *I, Gamon, will save us!*\n\nGamon can provide information about completing Mythic+ dungeons at specific keystone levels (up to level ${MAX_KEY_LEVEL_AVAILABLE}) and how that might impact a character's Mythic+ rating.\n`
                 + "- `/gamon simulate` will simulate a character running all Mythic+ dungeons at a single keystone level\n"
                 + "- `/gamon push` will tell which dungeons a character could run to slightly improve their Mythic+ rating\n"
                 + "- `/gamon goal` will provide a plan for dungeons a character can complete to reach a goal Mythic+ rating\n"
@@ -80,9 +78,8 @@ module.exports = {
 			const content = `Gamon whispers: ${SAY_QUOTES[rand]}`;
 			await interaction.reply({ content, flags: MessageFlags.Ephemeral });
 		} else if (subcommand === "shouts") {
-			const shoutQuotes = server === TLD_GUILD_ID ? SHOUT_QUOTES_TLD : SHOUT_QUOTES;
-			const rand = Math.floor(Math.random() * shoutQuotes.length);
-			const content = shoutQuotes[rand];
+			const rand = Math.floor(Math.random() * SHOUT_QUOTES.length);
+			const content = SHOUT_QUOTES[rand];
 			await interaction.reply({ content });
 		} else if (subcommand === "butts") {
 			const rand = Math.floor(Math.random() * BUTT_QUOTES.length);

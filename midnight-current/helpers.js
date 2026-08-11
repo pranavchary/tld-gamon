@@ -20,15 +20,16 @@ const DUNGEON_SHORTNAME_SLUG_MAP = {
 	VSA: "voidscar-arena",
 };
 
+// https://support.raider.io/kb/frequently-asked-questions/what-is-the-base-score-value-for-each-level-keystone
 const KEYLEVEL_BASESCORE_MAP = {
-	2: 165,
-	3: 180,
-	4: 205,
-	5: 220,
-	6: 235,
-	7: 265,
-	8: 280,
-	9: 295,
+	2: 155,
+	3: 170,
+	4: 200,
+	5: 215,
+	6: 230,
+	7: 260,
+	8: 275,
+	9: 290,
 	10: 320,
 	11: 335,
 	12: 365,
@@ -40,9 +41,19 @@ const KEYLEVEL_BASESCORE_MAP = {
 	18: 455,
 	19: 470,
 	20: 485,
+	21: 500,
+	22: 515,
+	23: 530,
+	24: 545,
+	25: 560,
+	26: 575,
+	27: 590,
+	28: 605,
+	29: 620,
+	30: 635,
 };
 
-const MAX_KEY_LEVEL_AVAILABLE = Object.keys(KEYLEVEL_BASESCORE_MAP)[Object.keys(KEYLEVEL_BASESCORE_MAP).length - 1];
+const MAX_KEY_LEVEL_AVAILABLE = Number(Object.keys(KEYLEVEL_BASESCORE_MAP)[Object.keys(KEYLEVEL_BASESCORE_MAP).length - 1]);
 
 /**
  * @param {string} text The text to capitalize
