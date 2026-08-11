@@ -1,34 +1,35 @@
 const DUNGEON_SHORTNAME_MAP = {
-	AA: "Algeth'ar Academy",
-	MT: "Magisters' Terrace",
-	MC: "Maisara Caverns",
-	NPX: "Nexus-Point Xenas",
-	POS: "Pit of Saron",
-	SEAT: "Seat of the Triumvirate",
-	SR: "Skyreach",
-	WS: "Windrunner Spire",
+	AOF: "Altar of Fangs",
+	DON: "Den of Nalorakk",
+	KR: "Kings' Rest",
+	MR: "Murder Row",
+	RLP: "Ruby Life Pools",
+	TOS: "Temple of Sethraliss",
+	BV: "The Blinding Vale",
+	VSA: "Voidscar Arena",
 };
 
 const DUNGEON_SHORTNAME_SLUG_MAP = {
-	AA: "algethar-academy",
-	MT: "magisters-terrace",
-	MC: "maisara-caverns",
-	NPX: "nexuspoint-xenas",
-	POS: "pit-of-saron",
-	SEAT: "seat-of-the-triumvirate",
-	SR: "skyreach",
-	WS: "windrunner-spire",
+	AOF: "altar-of-fangs",
+	DON: "den-of-nalorakk",
+	KR: "kings-rest",
+	MR: "murder-row",
+	RLP: "ruby-life-pools",
+	TOS: "temple-of-sethraliss",
+	BV: "the-blinding-vale",
+	VSA: "voidscar-arena",
 };
 
+// https://support.raider.io/kb/frequently-asked-questions/what-is-the-base-score-value-for-each-level-keystone
 const KEYLEVEL_BASESCORE_MAP = {
-	2: 165,
-	3: 180,
-	4: 205,
-	5: 220,
-	6: 235,
-	7: 265,
-	8: 280,
-	9: 295,
+	2: 155,
+	3: 170,
+	4: 200,
+	5: 215,
+	6: 230,
+	7: 260,
+	8: 275,
+	9: 290,
 	10: 320,
 	11: 335,
 	12: 365,
@@ -40,9 +41,19 @@ const KEYLEVEL_BASESCORE_MAP = {
 	18: 455,
 	19: 470,
 	20: 485,
+	21: 500,
+	22: 515,
+	23: 530,
+	24: 545,
+	25: 560,
+	26: 575,
+	27: 590,
+	28: 605,
+	29: 620,
+	30: 635,
 };
 
-const MAX_KEY_LEVEL_AVAILABLE = Object.keys(KEYLEVEL_BASESCORE_MAP)[Object.keys(KEYLEVEL_BASESCORE_MAP).length - 1];
+const MAX_KEY_LEVEL_AVAILABLE = Number(Object.keys(KEYLEVEL_BASESCORE_MAP)[Object.keys(KEYLEVEL_BASESCORE_MAP).length - 1]);
 
 /**
  * @param {string} text The text to capitalize
@@ -55,7 +66,8 @@ const capitalizeText = (text) => {
 
 /**
  * Used to eliminate floating point arithmetic issues that frequently occur in JavaScript
- * @param {number} num The number to sanitize. Can be a single number, a single math operation, or a series of operations that results in a number output
+ * @param {number} num The number to sanitize.
+ * Can be a single number, a single math operation, or a series of operations that results in a number output.
  * @returns The number provided fixed to a single decimal point
  */
 const sanitizeNumber = (num) => +(num.toFixed(1));

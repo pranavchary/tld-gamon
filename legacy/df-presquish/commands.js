@@ -7,7 +7,7 @@ const {
 	getDungeonRating,
 	DUNGEON_SHORTNAME_MAP,
 } = require("./helpers");
-const { SPEC_SHORTNAME_MAP } = require("../constants");
+const { SPEC_SHORTNAME_MAP } = require("../../constants");
 
 let currentPrimaryAffix;
 
