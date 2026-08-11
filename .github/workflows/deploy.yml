@@ -1,0 +1,17 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+  # Allow manual redeploys from the Actions tab without a code push.
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Redeploy bot on EC2
+    runs-on: self-hosted
+
+    steps:
+      - name: Pull latest and redeploy
+        run: bash ~/tld-gamon/scripts/update.sh
