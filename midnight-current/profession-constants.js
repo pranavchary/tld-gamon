@@ -1,3 +1,8 @@
+/**
+ * @deprecated Crafting has been retired as a Gamon capability. This file is no
+ * longer in use and is kept for historical reference only.
+ */
+
 const PROFESSIONS = {
 	Alchemy: "alchemy",
 	Blacksmithing: "blacksmithing",

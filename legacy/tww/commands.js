@@ -8,8 +8,7 @@ const {
 	sanitizeNumber,
 	getDungeonRating,
 } = require("./helpers");
-const { SPEC_SHORTNAME_MAP } = require("../constants");
-// const { setCache, getCache } = require('../cache-service');
+const { SPEC_SHORTNAME_MAP } = require("../../constants");
 
 /**
  * Checks Raider.io Mythic+ data for any missing dungeons and populates the `mythic_plus_best_runs` array with enough data to continue operations.
@@ -364,37 +363,5 @@ const calculateTheWarWithinData = async (interaction) => {
 		}
 	}
 };
-
-// CURRENTlY UNUSED METHODS
-// const getKeystoneUpgradeForTimerPercentage = (timerPercentage) => {
-//     if (timerPercentage < 0) return 0;
-//     if (timerPercentage < 0.2) return 1;
-//     if (timerPercentage < 0.4) return 2;
-//     return 3;
-// };
-
-// const getDungeonTimeLimitSeconds = async (shortName) => {
-//     let timeLimit = getCache(shortName);
-//     if (!timeLimit) {
-//         try {
-//             const slug = DUNGEON_SHORTNAME_SLUG_MAP[shortName];
-//             const response = await axios.get('https://raider.io/api/v1/mythic-plus/runs', {
-//                 params: {
-//                     season: 'season-tww-1',
-//                     dungeon: slug
-//                 }
-//             });
-//             if (response.data.rankings && response.data.rankings.length && response.data.rankings.length > 0) {
-//                 timeLimit = response.data.rankings[0].run.keystone_time_ms / 1000;
-//                 setCache(shortName, timeLimit);
-//             }
-//         } catch (e) {
-//             console.error(`[RAIDERIO] Error retrieving dungeon timer for ${shortName}`);
-//             console.error(e);
-//         }
-//     }
-
-//     return timeLimit;
-// };
 
 module.exports = { calculateTheWarWithinData };

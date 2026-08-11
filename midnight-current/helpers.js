@@ -1,23 +1,23 @@
 const DUNGEON_SHORTNAME_MAP = {
-	AA: "Algeth'ar Academy",
-	MT: "Magisters' Terrace",
-	MC: "Maisara Caverns",
-	NPX: "Nexus-Point Xenas",
-	POS: "Pit of Saron",
-	SEAT: "Seat of the Triumvirate",
-	SR: "Skyreach",
-	WS: "Windrunner Spire",
+	AOF: "Altar of Fangs",
+	DON: "Den of Nalorakk",
+	KR: "Kings' Rest",
+	MR: "Murder Row",
+	RLP: "Ruby Life Pools",
+	TOS: "Temple of Sethraliss",
+	BV: "The Blinding Vale",
+	VSA: "Voidscar Arena",
 };
 
 const DUNGEON_SHORTNAME_SLUG_MAP = {
-	AA: "algethar-academy",
-	MT: "magisters-terrace",
-	MC: "maisara-caverns",
-	NPX: "nexuspoint-xenas",
-	POS: "pit-of-saron",
-	SEAT: "seat-of-the-triumvirate",
-	SR: "skyreach",
-	WS: "windrunner-spire",
+	AOF: "altar-of-fangs",
+	DON: "den-of-nalorakk",
+	KR: "kings-rest",
+	MR: "murder-row",
+	RLP: "ruby-life-pools",
+	TOS: "temple-of-sethraliss",
+	BV: "the-blinding-vale",
+	VSA: "voidscar-arena",
 };
 
 const KEYLEVEL_BASESCORE_MAP = {
@@ -55,7 +55,8 @@ const capitalizeText = (text) => {
 
 /**
  * Used to eliminate floating point arithmetic issues that frequently occur in JavaScript
- * @param {number} num The number to sanitize. Can be a single number, a single math operation, or a series of operations that results in a number output
+ * @param {number} num The number to sanitize.
+ * Can be a single number, a single math operation, or a series of operations that results in a number output.
  * @returns The number provided fixed to a single decimal point
  */
 const sanitizeNumber = (num) => +(num.toFixed(1));
